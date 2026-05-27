@@ -1,7 +1,10 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react'
+import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/clerk-react'
 import { useCart } from '../context/CartContext'
+import { useIsMobile } from '../hooks/useIsMobile'
+
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL as string
 
 const CURRENCIES = ['KSH']
 
@@ -12,6 +15,9 @@ interface HeaderProps {
 export default function Header({ darkMode = false }: HeaderProps) {
   const { totalItems, openCart } = useCart()
   const [currency, setCurrency] = useState('KSH')
+  const { user } = useUser()
+  const isAdmin = !!user?.primaryEmailAddress?.emailAddress && user.primaryEmailAddress.emailAddress === ADMIN_EMAIL
+  const isMobile = useIsMobile()
 
   const textColor = darkMode ? 'rgba(255,255,255,0.92)' : '#111111'
   const pillBg = darkMode ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.55)'
@@ -38,25 +44,25 @@ export default function Header({ darkMode = false }: HeaderProps) {
     <header
       style={{
         position: 'fixed',
-        top: 18,
+        top: isMobile ? 12 : 18,
         left: 0,
         right: 0,
         zIndex: 100,
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '0 24px',
+        padding: isMobile ? '0 12px' : '0 24px',
         pointerEvents: 'none',
       }}
     >
       {/* Brand */}
       <Link
         to="/"
-        style={{ ...pillStyle, pointerEvents: 'auto', textDecoration: 'none' }}
+        style={{ ...pillStyle, pointerEvents: 'auto', textDecoration: 'none', padding: isMobile ? '6px 12px' : '8px 18px' }}
       >
         <span
           style={{
-            fontSize: '20px',
+            fontSize: isMobile ? '14px' : '20px',
             fontWeight: 700,
             letterSpacing: '0.22em',
             textTransform: 'uppercase',
@@ -69,8 +75,9 @@ export default function Header({ darkMode = false }: HeaderProps) {
       </Link>
 
       {/* Right pills */}
-      <div style={{ display: 'flex', gap: '10px', pointerEvents: 'auto', alignItems: 'center' }}>
-        {/* Currency */}
+      <div style={{ display: 'flex', gap: isMobile ? '6px' : '10px', pointerEvents: 'auto', alignItems: 'center' }}>
+        {/* Currency — hidden on mobile (only one option) */}
+        {!isMobile && (
         <div style={pillStyle}>
           <select
             value={currency}
@@ -93,6 +100,7 @@ export default function Header({ darkMode = false }: HeaderProps) {
             ))}
           </select>
         </div>
+        )}
 
         {/* Cart */}
         <button
@@ -100,10 +108,11 @@ export default function Header({ darkMode = false }: HeaderProps) {
           style={{
             ...pillStyle,
             gap: '6px',
-            minWidth: '72px',
+            minWidth: isMobile ? '54px' : '72px',
             justifyContent: 'center',
             background: pillBg,
             border: pillBorder,
+            padding: isMobile ? '6px 12px' : '8px 18px',
           }}
         >
           <svg
@@ -150,6 +159,22 @@ export default function Header({ darkMode = false }: HeaderProps) {
             Sign In
           </Link>
         </SignedOut>
+
+        {isAdmin && (
+          <Link
+            to="/admin"
+            style={{
+              ...pillStyle,
+              textDecoration: 'none',
+              fontSize: '11px',
+              fontWeight: 700,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Admin
+          </Link>
+        )}
 
         <SignedIn>
           <div

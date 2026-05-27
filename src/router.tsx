@@ -7,6 +7,7 @@ import ProductPage from './pages/ProductPage'
 import CheckoutPage from './pages/CheckoutPage'
 import SignInPage from './pages/SignInPage'
 import SignUpPage from './pages/SignUpPage'
+import AdminPage from './pages/AdminPage'
 
 function RootLayout() {
   return (
@@ -80,6 +81,12 @@ const signUpSplatRoute = createRoute({
   component: SignUpPage,
 })
 
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/admin',
+  component: AdminPage,
+})
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   productRoute,
@@ -88,6 +95,7 @@ const routeTree = rootRoute.addChildren([
   signInSplatRoute,
   signUpRoute,
   signUpSplatRoute,
+  adminRoute,
 ])
 
 export const router = createRouter({ routeTree })

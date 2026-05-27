@@ -4,11 +4,12 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n client,server -c cyan,magenta \"vite\" \"tsx watch server/index.ts\"",
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "dev:client": "vite",
     "dev:server": "tsx watch server/index.ts",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "seed": "tsx server/seed.ts"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.6",
@@ -16,6 +17,7 @@
     "@stripe/stripe-js": "^9.5.0",
     "@tanstack/react-query": "^5.62.3",
     "@tanstack/react-router": "^1.82.6",
+    "convex": "^1.39.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

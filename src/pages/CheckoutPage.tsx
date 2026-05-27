@@ -595,7 +595,7 @@ export default function CheckoutPage() {
             textDecoration: 'none',
           }}
         >
-          LALAPJ
+          ART STUDIO
         </Link>
         <button
           onClick={() => navigate({ to: '/' })}

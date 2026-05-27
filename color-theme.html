@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Art Studio — Color Theme</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #04091c;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: #fff;
+    min-height: 100vh;
+  }
+
+  /* ── Grain overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: -20%;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.18;
+    mix-blend-mode: screen;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 80px 80px;
+    animation: grain 8s steps(10) infinite;
+  }
+  @keyframes grain {
+    0%   { transform: translate(0,0); }
+    10%  { transform: translate(-4%,-8%); }
+    20%  { transform: translate(-9%,4%); }
+    30%  { transform: translate(5%,-6%); }
+    50%  { transform: translate(-3%,9%); }
+    70%  { transform: translate(4%,-7%); }
+    100% { transform: translate(0,0); }
+  }
+
+  /* ── Layout ── */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 72px 32px 100px;
+  }
+
+  /* ── Header ── */
+  .hero {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+  .hero-label {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: #c6f135;
+    border: 1px solid rgba(198,241,53,0.3);
+    border-radius: 999px;
+    padding: 5px 16px;
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 6vw, 60px);
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1.05;
+    background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.5) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .hero p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Section ── */
+  section { margin-bottom: 72px; }
+  .section-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding-bottom: 12px;
+    margin-bottom: 28px;
+  }
+
+  /* ── Swatch grid ── */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .swatches.wide {
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  }
+  .swatch {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .swatch-color {
+    height: 72px;
+    width: 100%;
+  }
+  .swatch-info {
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.04);
+  }
+  .swatch-name {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .swatch-hex {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.38);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  /* ── Gradient strip ── */
+  .gradient-strip {
+    border-radius: 12px;
+    height: 100px;
+    width: 100%;
+    margin-bottom: 12px;
+    border: 1px solid rgba(255,255,255,0.07);
+    position: relative;
+    overflow: hidden;
+  }
+  .gradient-strip-label {
+    position: absolute;
+    bottom: 12px;
+    left: 16px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+  }
+  .gradients { display: flex; flex-direction: column; gap: 12px; }
+
+  /* ── Typography scale ── */
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .type-meta {
+    width: 120px;
+    flex-shrink: 0;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.25);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  /* ── UI Components ── */
+  .components { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: default;
+    white-space: nowrap;
+  }
+  .pill-glass {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(18px);
+    color: rgba(255,255,255,0.92);
+  }
+  .pill-accent {
+    background: #c6f135;
+    border: none;
+    color: #0a0a0a;
+  }
+  .pill-danger {
+    background: transparent;
+    border: 1px solid rgba(255,80,80,0.3);
+    color: rgba(255,100,100,0.8);
+  }
+  .pill-success {
+    background: rgba(125,234,107,0.12);
+    border: 1px solid rgba(125,234,107,0.25);
+    color: #7dea6b;
+  }
+  .pill-outline {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* card */
+  .card-demo {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 300px;
+  }
+  .card-demo input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: rgba(255,255,255,0.4);
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    width: 100%;
+  }
+  .card-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+  }
+
+  /* ── Tint spotlight demo ── */
+  .spotlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+  .spotlight-card {
+    border-radius: 12px;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .spotlight-name {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 2px;
+    position: relative;
+    z-index: 1;
+  }
+  .spotlight-hex {
+    font-size: 10px;
+    color: rgba(255,255,255,0.45);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    position: relative;
+    z-index: 1;
+  }
+  .spotlight-dot {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    z-index: 1;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .page { padding: 48px 16px 80px; }
+    .swatches { grid-template-columns: repeat(2, 1fr); }
+    .spotlights { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-label">Design System</div>
+    <h1>Art Studio<br>Color Theme</h1>
+    <p>Complete palette · Typography · UI components</p>
+  </div>
+
+  <!-- 1. Base Colors -->
+  <section>
+    <div class="section-title">01 — Base & Background</div>
+    <div class="swatches">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#000000;"></div>
+        <div class="swatch-info"><div class="swatch-name">Pure Black</div><div class="swatch-hex">#000000</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#0a0a0a;"></div>
+        <div class="swatch-info"><div class="swatch-name">Near Black</div><div class="swatch-hex">#0a0a0a</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#080808;"></div>
+        <div class="swatch-info"><div class="swatch-name">App Dark</div><div class="swatch-hex">#080808</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#04091c;"></div>
+        <div class="swatch-info"><div class="swatch-name">Deep Navy</div><div class="swatch-hex">#04091c</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#081530;"></div>
+        <div class="swatch-info"><div class="swatch-name">Navy Mid</div><div class="swatch-hex">#081530</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#0f2347;"></div>
+        <div class="swatch-info"><div class="swatch-name">Navy Dark</div><div class="swatch-hex">#0f2347</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#1a3f72;"></div>
+        <div class="swatch-info"><div class="swatch-name">Navy Blue</div><div class="swatch-hex">#1a3f72</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#2a5f9e;"></div>
+        <div class="swatch-info"><div class="swatch-name">Gallery Blue</div><div class="swatch-hex">#2a5f9e</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Accent Colors -->
+  <section>
+    <div class="section-title">02 — Accent & Status</div>
+    <div class="swatches">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#c6f135;"></div>
+        <div class="swatch-info"><div class="swatch-name">Lime Accent</div><div class="swatch-hex">#c6f135</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#7dea6b;"></div>
+        <div class="swatch-info"><div class="swatch-name">Success</div><div class="swatch-hex">#7dea6b</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#ff4444;"></div>
+        <div class="swatch-info"><div class="swatch-name">Error / Delete</div><div class="swatch-hex">#ff4444</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#ff6b81;"></div>
+        <div class="swatch-info"><div class="swatch-name">Error Light</div><div class="swatch-hex">#ff6b81</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#ffffff;"></div>
+        <div class="swatch-info"><div class="swatch-name">Primary Text</div><div class="swatch-hex">#ffffff</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:rgba(255,255,255,0.5); border: 1px dashed rgba(255,255,255,0.15);"></div>
+        <div class="swatch-info"><div class="swatch-name">Secondary Text</div><div class="swatch-hex">rgba(255,255,255,0.5)</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:rgba(255,255,255,0.15); border: 1px dashed rgba(255,255,255,0.1);"></div>
+        <div class="swatch-info"><div class="swatch-name">Muted Text</div><div class="swatch-hex">rgba(255,255,255,0.3)</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#111111;"></div>
+        <div class="swatch-info"><div class="swatch-name">Light Mode Text</div><div class="swatch-hex">#111111</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Gradients -->
+  <section>
+    <div class="section-title">03 — Gradients</div>
+    <div class="gradients">
+      <div>
+        <div class="gradient-strip" style="background: radial-gradient(ellipse 160% 120% at 70% 10%, #2a5f9e 0%, #1a3f72 20%, #0f2347 45%, #081530 70%, #04091c 100%);">
+          <div class="gradient-strip-label">Default Gallery Background</div>
+        </div>
+      </div>
+      <div>
+        <div class="gradient-strip" style="background: radial-gradient(ellipse at 50% 35%, #c8a84b 0%, #693816 25%, #0a0a0a 75%, #000 100%);">
+          <div class="gradient-strip-label">Product Spotlight — Amber #c8a84b</div>
+        </div>
+      </div>
+      <div>
+        <div class="gradient-strip" style="background: radial-gradient(ellipse at 50% 35%, #5b4fa0 0%, #2f2853 25%, #0a0a0a 75%, #000 100%);">
+          <div class="gradient-strip-label">Product Spotlight — Violet #5b4fa0</div>
+        </div>
+      </div>
+      <div>
+        <div class="gradient-strip" style="background: radial-gradient(ellipse at 50% 35%, #2080c0 0%, #104262 25%, #0a0a0a 75%, #000 100%);">
+          <div class="gradient-strip-label">Product Spotlight — Ocean #2080c0</div>
+        </div>
+      </div>
+      <div>
+        <div class="gradient-strip" style="background: radial-gradient(ellipse at 50% 35%, #40905a 0%, #214a2f 25%, #0a0a0a 75%, #000 100%);">
+          <div class="gradient-strip-label">Product Spotlight — Emerald #40905a</div>
+        </div>
+      </div>
+      <div>
+        <div class="gradient-strip" style="background: linear-gradient(135deg, #c6f135 0%, #a0c020 100%); display:flex; align-items:center; justify-content:center;">
+          <div class="gradient-strip-label" style="position:static; color:rgba(0,0,0,0.5);">Accent Gradient — Lime</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. UI Components -->
+  <section>
+    <div class="section-title">04 — UI Components</div>
+    <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start;">
+
+      <!-- Pills -->
+      <div>
+        <div class="card-label" style="margin-bottom:14px;">Header Pills (Glass)</div>
+        <div class="components">
+          <span class="pill pill-glass">ART STUDIO</span>
+          <span class="pill pill-glass">KSH</span>
+          <span class="pill pill-glass">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            0
+          </span>
+          <span class="pill pill-glass">Sign In</span>
+          <span class="pill pill-glass">Admin</span>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div>
+        <div class="card-label" style="margin-bottom:14px;">Action Buttons</div>
+        <div class="components">
+          <span class="pill pill-accent">Add to Cart</span>
+          <span class="pill pill-accent">Save Changes</span>
+          <span class="pill pill-outline">Cancel</span>
+          <span class="pill pill-danger">Delete</span>
+          <span class="pill pill-success">✓ Image uploaded</span>
+        </div>
+      </div>
+
+      <!-- Admin form card -->
+      <div>
+        <div class="card-label" style="margin-bottom:14px;">Admin Form Card</div>
+        <div class="card-demo">
+          <div class="card-label">Product Name *</div>
+          <input placeholder="Golden Horizon" />
+          <div class="card-label">Price (KSh) *</div>
+          <input placeholder="48000" />
+          <div style="display:flex;gap:8px;margin-top:4px;">
+            <span class="pill pill-accent" style="font-size:10px;padding:7px 18px;">Add Artwork</span>
+            <span class="pill pill-outline" style="font-size:10px;padding:7px 14px;">Cancel</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 5. Typography -->
+  <section>
+    <div class="section-title">05 — Typography Scale</div>
+    <div>
+      <div class="type-row">
+        <div class="type-meta">60px / 900</div>
+        <div style="font-size:60px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;line-height:1;">Hero</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">36px / 700</div>
+        <div style="font-size:36px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">Product Name</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">20px / 700</div>
+        <div style="font-size:20px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;">ART STUDIO</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">18px / 700</div>
+        <div style="font-size:18px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">Admin Panel</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">14px / 400</div>
+        <div style="font-size:14px;font-weight:400;color:rgba(255,255,255,0.72);line-height:1.7;max-width:480px;">A canvas flooded with amber and burnt gold, where a low sun dissolves into layered bands of ochre, rose, and deep copper — body copy italic.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">12px / 600</div>
+        <div style="font-size:12px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);">Category label</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">11px / 700</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;">Button / CTA Text</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">10px / 700</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:rgba(255,255,255,0.35);">Section heading / label</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Product Tints -->
+  <section>
+    <div class="section-title">06 — Product Tints (30 Artworks)</div>
+    <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:20px;letter-spacing:0.04em;">Each artwork has a unique tint that drives the gallery spotlight and product page background gradient.</p>
+    <div class="spotlights">
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #c8a84b33 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#c8a84b;"></div>
+        <div class="spotlight-name">Golden Horizon</div>
+        <div class="spotlight-hex">#c8a84b</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #5b4fa033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#5b4fa0;"></div>
+        <div class="spotlight-name">Midnight Abstract</div>
+        <div class="spotlight-hex">#5b4fa0</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #c0608033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#c06080;"></div>
+        <div class="spotlight-name">Bloom Series I</div>
+        <div class="spotlight-hex">#c06080</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #7a8a9a33 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#7a8a9a;"></div>
+        <div class="spotlight-name">Urban Silence</div>
+        <div class="spotlight-hex">#7a8a9a</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #e8b56033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#e8b560;"></div>
+        <div class="spotlight-name">Fractured Light</div>
+        <div class="spotlight-hex">#e8b560</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #b8a09033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#b8a090;"></div>
+        <div class="spotlight-name">Stoneware Vessel</div>
+        <div class="spotlight-hex">#b8a090</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #4a7a5a33 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#4a7a5a;"></div>
+        <div class="spotlight-name">Forest Echo</div>
+        <div class="spotlight-hex">#4a7a5a</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #c040e033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#c040e0;"></div>
+        <div class="spotlight-name">Neon Grid</div>
+        <div class="spotlight-hex">#c040e0</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #c4a04033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#c4a040;"></div>
+        <div class="spotlight-name">Still Life No. 7</div>
+        <div class="spotlight-hex">#c4a040</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #d4a07033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#d4a070;"></div>
+        <div class="spotlight-name">Woven Study</div>
+        <div class="spotlight-hex">#d4a070</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #5090c033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#5090c0;"></div>
+        <div class="spotlight-name">Coastal Morning</div>
+        <div class="spotlight-hex">#5090c0</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #a0908033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#a09080;"></div>
+        <div class="spotlight-name">Shadow Play</div>
+        <div class="spotlight-hex">#a09080</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #e0a04033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#e0a040;"></div>
+        <div class="spotlight-name">Amber Resin Panel</div>
+        <div class="spotlight-hex">#e0a040</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #70b08033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#70b080;"></div>
+        <div class="spotlight-name">Verdant Study</div>
+        <div class="spotlight-hex">#70b080</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #9060c033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#9060c0;"></div>
+        <div class="spotlight-name">Geometric I</div>
+        <div class="spotlight-hex">#9060c0</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #4060a033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#4060a0;"></div>
+        <div class="spotlight-name">Storm Study</div>
+        <div class="spotlight-hex">#4060a0</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #80c0b033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#80c0b0;"></div>
+        <div class="spotlight-name">Porcelain Bowl</div>
+        <div class="spotlight-hex">#80c0b0</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #e0508033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#e05080;"></div>
+        <div class="spotlight-name">Rose Noise</div>
+        <div class="spotlight-hex">#e05080</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #80889033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#808890;"></div>
+        <div class="spotlight-name">Monochrome No. 4</div>
+        <div class="spotlight-hex">#808890</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #a0683033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#a06830;"></div>
+        <div class="spotlight-name">Cave Ochre</div>
+        <div class="spotlight-hex">#a06830</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #30406033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#304060;"></div>
+        <div class="spotlight-name">Depth Field</div>
+        <div class="spotlight-hex">#304060</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #e0605033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#e06050;"></div>
+        <div class="spotlight-name">Coral Study</div>
+        <div class="spotlight-hex">#e06050</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #3060b033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#3060b0;"></div>
+        <div class="spotlight-name">Indigo Sky</div>
+        <div class="spotlight-hex">#3060b0</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #2a388033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#2a3880;"></div>
+        <div class="spotlight-name">Deep Indigo</div>
+        <div class="spotlight-hex">#2a3880</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #90b8d033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#90b8d0;"></div>
+        <div class="spotlight-name">Morning Haze</div>
+        <div class="spotlight-hex">#90b8d0</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #40905a33 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#40905a;"></div>
+        <div class="spotlight-name">Emerald Landscape</div>
+        <div class="spotlight-hex">#40905a</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #c8b8a033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#c8b8a0;"></div>
+        <div class="spotlight-name">Pale Light</div>
+        <div class="spotlight-hex">#c8b8a0</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #2080c033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#2080c0;"></div>
+        <div class="spotlight-name">Ocean Series II</div>
+        <div class="spotlight-hex">#2080c0</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #d0487033 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#d04870;"></div>
+        <div class="spotlight-name">Rose Garden</div>
+        <div class="spotlight-hex">#d04870</div>
+      </div>
+
+      <div class="spotlight-card" style="background: radial-gradient(ellipse at 30% 30%, #d0903a33 0%, transparent 70%), #0d0d0d;">
+        <div class="spotlight-dot" style="background:#d0903a;"></div>
+        <div class="spotlight-name">Golden Hour</div>
+        <div class="spotlight-hex">#d0903a</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding-top:40px;border-top:1px solid rgba(255,255,255,0.06);">
+    <p style="font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:rgba(255,255,255,0.18);">Art Studio &mdash; Color System &mdash; 2026</p>
+  </div>
+
+</div>
+</body>
+</html>

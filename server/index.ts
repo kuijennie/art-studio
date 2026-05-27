@@ -4,6 +4,7 @@ import cors from 'cors'
 import { connectDB } from './db'
 import checkoutRouter from './routes/checkout'
 import ordersRouter from './routes/orders'
+import productsRouter from './routes/products'
 
 const app = express()
 const PORT = Number(process.env.PORT ?? 3001)
@@ -13,6 +14,7 @@ app.use(cors({ origin: CLIENT_URL, credentials: true }))
 app.use(express.json())
 
 app.get('/api/health', (_, res) => res.json({ ok: true, ts: new Date() }))
+app.use('/api', productsRouter)
 app.use('/api', checkoutRouter)
 app.use('/api', ordersRouter)
 
