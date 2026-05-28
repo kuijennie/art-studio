@@ -1,93 +1,155 @@
 # Week 4: Dynamic Backend Processing & User Interaction Systems
 
 ## Objective
-Introduce server-side programming using PHP — form processing, session-based authentication, professional folder structure, and comparison with modern alternatives.
+Introduce server-side programming using PHP, form processing, session-based authentication, and professional folder structure.
 
-## Setup
-1. Install [XAMPP](https://www.apachefriends.org/) (includes Apache + PHP + MySQL).
-2. Copy the `WEEK 4` folder into `C:\xampp\htdocs\week4\` (or your htdocs path).
-3. Start **Apache** in the XAMPP Control Panel.
-4. Open each file in your browser:
 
-| File | URL |
-|---|---|
-| `fig1_server_side.php` | `http://localhost/week4/fig1_server_side.php` |
-| `fig2_forms.php` | `http://localhost/week4/fig2_forms.php` |
-| `fig3_auth.php` | `http://localhost/week4/fig3_auth.php` |
-| `fig4_structure.php` | `http://localhost/week4/fig4_structure.php` |
-| `fig5_modern_alternatives.html` | Open directly in browser |
 
----
+## Fig 1 – Server-Side Programming
 
-## Evidence
-
-### Fig 1: Server-Side Programming
 **File:** `fig1_server_side.php`
+
+A simple PHP page that takes a name from a form and displays a dynamic welcome message. Demonstrates the request-response cycle , the browser sends a POST request and PHP processes it on the server.
 
 **Code Snippet**
 ```php
 <?php
+$name = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = htmlspecialchars(trim($_POST['username'] ?? ''));
+    $name = htmlspecialchars(trim($_POST['username'] ?? ''));
 }
 ?>
 
-<p>Welcome, <?= $username ?>!</p>
-<p>Server time: <?= date('H:i:s') ?></p>
-<p>Request method: <?= $_SERVER['REQUEST_METHOD'] ?></p>
+<form method="POST" action="fig1_server_side.php">
+  <input type="text" name="username" placeholder="e.g. Jane" required>
+  <button type="submit">Submit</button>
+</form>
+
+<?php if ($name): ?>
+  <div class="welcome">Welcome <?= $name ?></div>
+<?php endif; ?>
 ```
+
+**Evidence**
+
+![Fig 1 – Welcome message displayed after form submission](Screenshot%202026-05-28%20080721.png)
 
 ---
 
-### Fig 2: HTML Forms & PHP Integration
+## Fig 2 – HTML Forms & PHP Integration
+
 **File:** `fig2_forms.php`
 
+Three forms in one page, registration, login, and contact, each processed by PHP using the POST method. Input is validated and a success or error message is shown.
+
 **Code Snippet**
 ```php
-// Registration — POST
-$name     = htmlspecialchars(trim($_POST['name']  ?? ''));
-$email    = htmlspecialchars(trim($_POST['email'] ?? ''));
-$password = trim($_POST['password'] ?? '');
+// Registration
+if (isset($_POST['action']) && $_POST['action'] === 'register') {
+    $name  = htmlspecialchars(trim($_POST['name']  ?? ''));
+    $email = htmlspecialchars(trim($_POST['email'] ?? ''));
 
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $msg = 'Enter a valid email address.';
-} elseif (strlen($password) < 6) {
-    $msg = 'Password must be at least 6 characters.';
-} else {
-    $msg = "Welcome, $name.";
+    if (!$name || !$email || !$_POST['password']) {
+        $msg = 'Please fill in all fields.';
+    } else {
+        $msg = "Registration successful! Welcome, $name.";
+    }
 }
 
-// Contact — GET (data visible in URL)
-$subject = htmlspecialchars(trim($_GET['subject'] ?? ''));
-$message = htmlspecialchars(trim($_GET['message'] ?? ''));
+// Login
+if (isset($_POST['action']) && $_POST['action'] === 'login') {
+    $username = trim($_POST['username'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+
+    if ($username === 'admin' && $password === 'admin123') {
+        $msg = "Login successful! Welcome back, $username.";
+    } else {
+        $msg = 'Invalid username or password.';
+    }
+}
+
+// Contact
+if (isset($_POST['action']) && $_POST['action'] === 'contact') {
+    $name    = htmlspecialchars(trim($_POST['contact_name'] ?? ''));
+    $subject = htmlspecialchars(trim($_POST['subject']      ?? ''));
+    $message = htmlspecialchars(trim($_POST['message']      ?? ''));
+
+    if (!$name || !$subject || !$message) {
+        $msg = 'Please fill in all fields.';
+    } else {
+        $msg = "Message sent! Thank you, $name.";
+    }
+}
 ```
+
+**Evidence**
+
+![Fig 2 – Registration form with success message](Screenshot%202026-05-28%20094103.png)
+
+![Fig 2 – Login form with success message](Screenshot%202026-05-28%20094432.png)
+
+![Fig 2 – Contact form with success message](Screenshot%202026-05-28%20094627.png)
 
 ---
 
-### Fig 3: Simple Authentication System
+## Fig 3 – Simple Authentication System
+
 **File:** `fig3_auth.php`
+
+A login page with username/password validation and PHP session management. After a successful login, a session is created and the user is shown a welcome page. Logging out destroys the session.
 
 **Code Snippet**
 ```php
+<?php
 session_start();
 
+$users = [
+    'admin' => 'admin123',
+    'jane'  => 'jane2024',
+    'john'  => 'john2024',
+];
+
 // Login — create session
-$_SESSION['user']     = $username;
-$_SESSION['role']     = $users[$username]['role'];
-$_SESSION['login_at'] = date('H:i:s');
-header('Location: fig3_auth.php');
-exit;
+if ($_POST['action'] === 'login') {
+    $username = trim($_POST['username'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+
+    if ($users[$username] === $password) {
+        $_SESSION['username'] = $username;
+        header('Location: fig3_auth.php');
+        exit;
+    } else {
+        $error = 'Incorrect password.';
+    }
+}
 
 // Logout — destroy session
-session_destroy();
-header('Location: fig3_auth.php');
-exit;
+if ($_POST['action'] === 'logout') {
+    session_destroy();
+    header('Location: fig3_auth.php');
+    exit;
+}
+?>
+
+<?php if (isset($_SESSION['username'])): ?>
+  <p>Welcome, <?= $_SESSION['username'] ?>! You are logged in.</p>
+<?php else: ?>
+  <!-- show login form -->
+<?php endif; ?>
 ```
+
+**Evidence**
+
+![Fig 3 – Login page with validation error](Screenshot%202026-05-28%20094740.png)
 
 ---
 
-### Fig 4: Backend Folder Organization
+## Fig 4 - Backend Folder Organization
+
 **File:** `fig4_structure.php`
+
+Demonstrates a professional PHP project folder structure separating pages, includes, assets, and database files.
 
 ```
 project/
@@ -108,43 +170,24 @@ project/
     └── schema.sql
 ```
 
-**Reusable DB connection:**
-```php
-// includes/db.php
-$conn = new mysqli('localhost', 'root', '', 'project_db');
+**Evidence**
 
-// In any page:
-require_once 'includes/db.php';
-$result = $conn->query('SELECT * FROM students');
-```
+![Fig 4 – Folder structure displayed in the browser](Screenshot%202026-05-28%20081018.png)
 
 ---
 
-### Fig 5: Modern Backend Alternatives
-**File:** `fig5_modern_alternatives.html` — open directly in browser
+## Fig 5 - Introduction to Modern Backend Alternatives
 
-| PHP Concept | Modern Alternative |
-|---|---|
-| PHP Backend | Node.js |
-| XAMPP | Express.js |
-| MySQL | MongoDB |
-| PHP Sessions | JWT Authentication |
-| Shared Hosting | Cloud Deployment (Vercel, Railway, AWS) |
+**File:** `fig5_modern_alternatives.html`
 
-**PHP vs Node.js — same task, different syntax:**
-```php
-// PHP
-$name = $_POST['username'];
-echo "Welcome " . $name;
-```
-```js
-// Node.js + Express
-app.post('/welcome', (req, res) => {
-    res.send(`Welcome ${req.body.username}`);
-});
-```
+A comparison between PHP (used in this week's tasks) and modern backend alternatives such as Node.js, MongoDB, JWT, and cloud hosting.
+
+| Concept | PHP | Modern Alternative |
+|---|---|---|
+| Backend Language | PHP | Node.js |
+| Local Dev Server | XAMPP | Express.js |
+| Database | MySQL | MongoDB |
+| User Sessions | `session_start()` | JWT |
+| Hosting | Shared Hosting / cPanel | Vercel, Railway, AWS |
 
 ---
-
-## Summary
-Backend processing built in PHP: dynamic welcome page demonstrating the request-response cycle using `$_POST`, GET/POST form handling with `filter_var` validation, session-based login and logout using `session_start()` and `$_SESSION`, professional PHP folder structure with reusable `includes/`, and a side-by-side PHP vs Node.js comparison covering language, database, auth, and hosting.
