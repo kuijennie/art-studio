@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fig 5: Modern Backend Alternatives</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 750px; margin: 40px auto; padding: 0 20px; }
+    h2 { color: #333; }
+    h3 { color: #007bff; margin-top: 28px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 10px 14px; text-align: left; vertical-align: top; }
+    th { background: #007bff; color: white; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    .php-col  { border-left: 4px solid #6f42c1; }
+    .node-col { border-left: 4px solid #28a745; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 12px;
+             font-size: 12px; font-weight: bold; color: white; margin-left: 6px; vertical-align: middle; }
+    .php  { background: #6f42c1; }
+    .node { background: #28a745; }
+    code { background: #f0f0f0; padding: 2px 5px; border-radius: 3px; font-size: 13px; }
+    .code { background: #1e1e1e; color: #d4d4d4; font-family: monospace; font-size: 13px;
+            padding: 14px 18px; border-radius: 6px; margin-top: 10px; white-space: pre; overflow-x: auto; }
+    .info  { background: #e3f2fd; color: #0d47a1; border-left: 4px solid #1976d2;
+             padding: 10px 14px; border-radius: 4px; margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+<h2>Fig 5: Introduction to Modern Backend Alternatives</h2>
+
+<h3>PHP vs Modern Stack &mdash; Comparison Table</h3>
+<table>
+  <tr>
+    <th>Concept</th>
+    <th>PHP <span class="badge php">What We Used</span></th>
+    <th>Modern Alternative <span class="badge node">Also Common</span></th>
+  </tr>
+  <tr>
+    <td><strong>Backend Language</strong></td>
+    <td class="php-col">PHP &mdash; runs on Apache/Nginx, processes <code>.php</code> files server-side</td>
+    <td class="node-col">Node.js &mdash; JavaScript on the server, event-driven, non-blocking I/O</td>
+  </tr>
+  <tr>
+    <td><strong>Local Dev Server</strong></td>
+    <td class="php-col">XAMPP / WAMP &mdash; bundles Apache + MySQL + PHP, ready in one install</td>
+    <td class="node-col">Express.js &mdash; lightweight Node.js framework, started with <code>node server.js</code></td>
+  </tr>
+  <tr>
+    <td><strong>Database</strong></td>
+    <td class="php-col">MySQL &mdash; relational database, SQL queries, structured tables</td>
+    <td class="node-col">MongoDB &mdash; NoSQL, stores JSON documents, flexible schema</td>
+  </tr>
+  <tr>
+    <td><strong>User Sessions</strong></td>
+    <td class="php-col">PHP Sessions &mdash; <code>session_start()</code>, data stored on the server</td>
+    <td class="node-col">JWT (JSON Web Tokens) &mdash; stateless, token sent with each request</td>
+  </tr>
+  <tr>
+    <td><strong>Hosting</strong></td>
+    <td class="php-col">Shared Hosting / cPanel &mdash; upload files via FTP, widely supported</td>
+    <td class="node-col">Cloud Deployment &mdash; Vercel, Railway, AWS; auto-scaling, CI/CD pipelines</td>
+  </tr>
+  <tr>
+    <td><strong>Same Language Full-Stack?</strong></td>
+    <td class="php-col">No &mdash; PHP on backend, JavaScript on frontend (two languages)</td>
+    <td class="node-col">Yes &mdash; JavaScript / TypeScript on both frontend and backend</td>
+  </tr>
+</table>
+
+<h3>Code Comparison: Simple "Hello Name" Response</h3>
+
+<strong>PHP <span class="badge php">What We Used</span></strong>
+<div class="code">&lt;?php
+// index.php
+$name = $_POST['username'];
+echo "Welcome " . $name;
+?&gt;</div>
+
+<strong>Node.js + Express <span class="badge node">Modern Alternative</span></strong>
+<div class="code">// server.js
+const express = require('express');
+const app = express();
+app.use(express.urlencoded({ extended: true }));
+
+app.post('/welcome', (req, res) => {
+    const username = req.body.username;
+    res.send(`Welcome ${username}`);
+});
+
+app.listen(3000);</div>
+
+<h3>PHP Sessions vs JWT</h3>
+<table>
+  <tr><th></th><th>PHP Sessions <span class="badge php">What We Used</span></th><th>JWT <span class="badge node">Modern</span></th></tr>
+  <tr><td><strong>Storage</strong></td><td>Server stores session data</td><td>Token stored on client (localStorage / cookie)</td></tr>
+  <tr><td><strong>Setup</strong></td><td>Simple &mdash; just <code>session_start()</code></td><td>Requires a library and token signing key</td></tr>
+  <tr><td><strong>Scalability</strong></td><td>Harder &mdash; sessions tied to one server</td><td>Easier &mdash; stateless, any server can verify</td></tr>
+  <tr><td><strong>Revocation</strong></td><td>Easy &mdash; <code>session_destroy()</code></td><td>Harder &mdash; need a token blacklist or short expiry</td></tr>
+</table>
+
+<div class="info">
+  <strong>Key Takeaway:</strong> PHP is a solid foundation for understanding backend concepts.
+  Modern alternatives (Node.js, MongoDB, JWT, cloud hosting) build on the same ideas
+  &mdash; request handling, data storage, authentication &mdash; but are designed for larger scale.
+  Learning PHP first makes these modern tools easier to understand.
+</div>
+
+</body>
+</html>
