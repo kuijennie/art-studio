@@ -9,7 +9,9 @@
     "dev:server": "tsx watch server/index.ts",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "seed": "tsx server/seed.ts"
+    "seed": "tsx server/seed.ts",
+    "createdb": "tsx server/createdb.ts",
+    "crud-demo": "tsx server/crud-demo.ts"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.6",
@@ -17,14 +19,15 @@
     "@stripe/stripe-js": "^9.5.0",
     "@tanstack/react-query": "^5.62.3",
     "@tanstack/react-router": "^1.82.6",
-    "convex": "^1.39.1",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^8.24.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "stripe": "^22.1.1"
+    "stripe": "^22.1.1",
+    "svix": "^1.95.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.4",

@@ -1,8 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/clerk-react'
 import { useNavigate } from '@tanstack/react-router'
-import { useMutation as useConvexMutation, useQuery as useConvexQuery } from 'convex/react'
-import { api } from '../../convex/_generated/api'
 
 import {
   useProducts,
@@ -11,6 +9,30 @@ import {
   useDeleteProduct,
 } from '../hooks/useProducts'
 import type { Product, ProductFields } from '../hooks/useProducts'
+
+const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
+
+interface MongoUser {
+  _id: string
+  username: string
+  createdAt: string
+  lastLogin: string | null
+}
+
+function useMongoUsers() {
+  const [users, setUsers] = useState<MongoUser[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch(`${API}/api/users`)
+      .then(r => r.json())
+      .then(data => { setUsers(data); setLoading(false) })
+      .catch(() => { setError('Failed to load users'); setLoading(false) })
+  }, [])
+
+  return { users, loading, error }
+}
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL as string | undefined
 
@@ -56,44 +78,10 @@ function ProductForm({
   mode: 'add' | 'edit'
 }) {
   const [form, setForm] = useState<ProductFields>(initial)
-  const [uploading, setUploading] = useState(false)
-  const [uploadError, setUploadError] = useState<string | null>(null)
-  const [pendingStorageId, setPendingStorageId] = useState<string | null>(null)
-  const fileRef = useRef<HTMLInputElement>(null)
-  const generateUploadUrl = useConvexMutation(api.files.generateUploadUrl)
-  const storageUrl = useConvexQuery(api.files.getUrl, pendingStorageId ? { storageId: pendingStorageId } : 'skip')
-
-  useEffect(() => {
-    if (storageUrl) {
-      setForm(f => ({ ...f, image: storageUrl }))
-    }
-  }, [storageUrl])
 
   function set(key: keyof ProductFields) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
       setForm(f => ({ ...f, [key]: key === 'price' ? Number(e.target.value) : e.target.value }))
-  }
-
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUploading(true)
-    setUploadError(null)
-    try {
-      const uploadUrl = await generateUploadUrl()
-      const res = await fetch(uploadUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': file.type || 'application/octet-stream' },
-        body: file,
-      })
-      if (!res.ok) throw new Error(`Upload failed: ${res.status} ${res.statusText}`)
-      const { storageId } = await res.json() as { storageId: string }
-      setPendingStorageId(storageId)
-    } catch (err) {
-      setUploadError(err instanceof Error ? err.message : 'Upload failed')
-    } finally {
-      setUploading(false)
-    }
   }
 
   return (
@@ -139,49 +127,16 @@ function ProductForm({
           </select>
         </div>
 
-        {/* Image upload */}
+        {/* Image URL */}
         <div style={{ gridColumn: '1 / -1' }}>
-          <label style={label}>Image *</label>
-          <input ref={fileRef} type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
-
-          {form.image ? (
-            <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-              <img
-                src={form.image}
-                alt="preview"
-                style={{ width: '160px', height: '200px', objectFit: 'cover', borderRadius: '8px', flexShrink: 0, border: '1px solid rgba(255,255,255,0.1)' }}
-              />
-              <div style={{ flex: 1 }}>
-                <p style={{ margin: '0 0 10px', fontSize: '12px', color: '#7dea6b', fontWeight: 600 }}>Image uploaded</p>
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  disabled={uploading}
-                  style={{ ...input, cursor: 'pointer', textAlign: 'left', color: 'rgba(255,255,255,0.5)', display: 'block' }}
-                >
-                  {uploading ? 'Uploading…' : 'Replace image'}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              disabled={uploading}
-              style={{
-                ...input,
-                cursor: uploading ? 'not-allowed' : 'pointer',
-                textAlign: 'left',
-                color: uploading ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.5)',
-                display: 'block',
-              }}
-            >
-              {uploading ? 'Uploading…' : 'Choose image file…'}
-            </button>
-          )}
-
-          {uploadError && (
-            <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#ff6b81' }}>{uploadError}</p>
+          <label style={label}>Image URL *</label>
+          <input style={input} value={form.image} onChange={set('image')} placeholder="https://…" />
+          {form.image && (
+            <img
+              src={form.image}
+              alt="preview"
+              style={{ marginTop: '12px', width: '160px', height: '200px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}
+            />
           )}
         </div>
 
@@ -211,12 +166,12 @@ function ProductForm({
       <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
         <button
           onClick={() => onSave(form)}
-          disabled={saving || uploading}
+          disabled={saving}
           style={{
             padding: '10px 28px', borderRadius: '999px', border: 'none',
-            background: (saving || uploading) ? 'rgba(198,241,53,0.5)' : '#c6f135',
+            background: (saving) ? 'rgba(198,241,53,0.5)' : '#c6f135',
             color: '#0a0a0a', fontSize: '11px', fontWeight: 700,
-            letterSpacing: '0.16em', textTransform: 'uppercase', cursor: (saving || uploading) ? 'not-allowed' : 'pointer',
+            letterSpacing: '0.16em', textTransform: 'uppercase', cursor: (saving) ? 'not-allowed' : 'pointer',
           }}
         >
           {saving ? 'Saving…' : mode === 'add' ? 'Add Artwork' : 'Save Changes'}
@@ -246,10 +201,12 @@ export default function AdminPage() {
   const update = useUpdateProduct()
   const del = useDeleteProduct()
 
+  const [tab, setTab] = useState<'products' | 'users'>('products')
   const [mode, setMode] = useState<'idle' | 'add' | 'edit'>('idle')
   const [editing, setEditing] = useState<Product | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const { users: mongoUsers, loading: usersLoading, error: usersError } = useMongoUsers()
 
   if (!isLoaded) return null
 
@@ -304,6 +261,18 @@ export default function AdminPage() {
           <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#fff' }}>
             Admin
           </span>
+          <span style={{ color: 'rgba(255,255,255,0.15)' }}>|</span>
+          {(['products', 'users'] as const).map(t => (
+            <button key={t} onClick={() => setTab(t)} style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: '11px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: tab === t ? '#c6f135' : 'rgba(255,255,255,0.4)',
+              borderBottom: tab === t ? '2px solid #c6f135' : '2px solid transparent',
+              paddingBottom: '2px',
+            }}>
+              {t}
+            </button>
+          ))}
         </div>
         <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.06em' }}>
           {userEmail}
@@ -312,136 +281,209 @@ export default function AdminPage() {
 
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 32px' }}>
 
-        {/* Add / Edit form */}
-        {mode === 'add' && (
-          <ProductForm
-            initial={EMPTY}
-            onSave={handleSave}
-            onCancel={() => { setMode('idle'); setFormError(null) }}
-            saving={create.isPending}
-            error={formError}
-            mode="add"
-          />
-        )}
-        {mode === 'edit' && editing && (
-          <ProductForm
-            initial={editing}
-            onSave={handleSave}
-            onCancel={() => { setMode('idle'); setEditing(null); setFormError(null) }}
-            saving={update.isPending}
-            error={formError}
-            mode="edit"
-          />
-        )}
+        {tab === 'products' && (
+          <>
+            {/* Add / Edit form */}
+            {mode === 'add' && (
+              <ProductForm
+                initial={EMPTY}
+                onSave={handleSave}
+                onCancel={() => { setMode('idle'); setFormError(null) }}
+                saving={create.isPending}
+                error={formError}
+                mode="add"
+              />
+            )}
+            {mode === 'edit' && editing && (
+              <ProductForm
+                initial={editing}
+                onSave={handleSave}
+                onCancel={() => { setMode('idle'); setEditing(null); setFormError(null) }}
+                saving={update.isPending}
+                error={formError}
+                mode="edit"
+              />
+            )}
 
-        {/* Header row */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <div>
-            <h1 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fff', margin: 0 }}>
-              Products
-            </h1>
-            <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
-              {products?.length ?? 0} artworks
-            </p>
-          </div>
-          {mode === 'idle' && (
-            <button
-              onClick={() => setMode('add')}
-              style={{
-                padding: '10px 24px', borderRadius: '999px', border: 'none',
-                background: '#c6f135', color: '#0a0a0a', fontSize: '11px',
-                fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', cursor: 'pointer',
-              }}
-            >
-              + Add Artwork
-            </button>
-          )}
-        </div>
-
-        {/* Products table */}
-        {isLoading ? (
-          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '13px' }}>Loading…</p>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            {/* Table header */}
-            <div style={{
-              display: 'grid', gridTemplateColumns: '60px 1fr 120px 110px 130px',
-              gap: '16px', padding: '10px 16px',
-              fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.3)',
-            }}>
-              <span></span>
-              <span>Name</span>
-              <span>Category</span>
-              <span>Price</span>
-              <span>Actions</span>
+            {/* Header row */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+              <div>
+                <h1 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fff', margin: 0 }}>
+                  Products
+                </h1>
+                <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
+                  {products?.length ?? 0} artworks
+                </p>
+              </div>
+              {mode === 'idle' && (
+                <button
+                  onClick={() => setMode('add')}
+                  style={{
+                    padding: '10px 24px', borderRadius: '999px', border: 'none',
+                    background: '#c6f135', color: '#0a0a0a', fontSize: '11px',
+                    fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', cursor: 'pointer',
+                  }}
+                >
+                  + Add Artwork
+                </button>
+              )}
             </div>
 
-            {products?.map(product => (
-              <div
-                key={product.slug}
-                style={{
+            {/* Products table */}
+            {isLoading ? (
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '13px' }}>Loading…</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <div style={{
                   display: 'grid', gridTemplateColumns: '60px 1fr 120px 110px 130px',
-                  gap: '16px', alignItems: 'center',
-                  padding: '12px 16px',
-                  background: deleteConfirm === product.slug ? 'rgba(255,80,80,0.06)' : 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.05)',
-                  borderRadius: '10px',
-                  transition: 'background 200ms',
-                }}
-              >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  style={{ width: '52px', height: '64px', objectFit: 'cover', borderRadius: '6px' }}
-                />
-                <div>
-                  <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#fff' }}>{product.name}</p>
-                  <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>{product.slug}</p>
+                  gap: '16px', padding: '10px 16px',
+                  fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                  color: 'rgba(255,255,255,0.3)',
+                }}>
+                  <span></span>
+                  <span>Name</span>
+                  <span>Category</span>
+                  <span>Price</span>
+                  <span>Actions</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: product.tint, flexShrink: 0 }} />
-                  <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', textTransform: 'capitalize' }}>{product.category}</span>
-                </div>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>
-                  KSh {product.price.toLocaleString()}
-                </span>
 
-                {deleteConfirm === product.slug ? (
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={() => handleDelete(product.slug)}
-                      disabled={del.isPending}
-                      style={{ padding: '6px 14px', borderRadius: '999px', border: 'none', background: '#ff4444', color: '#fff', fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}
-                    >
-                      Confirm
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirm(null)}
-                      style={{ padding: '6px 10px', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: 'rgba(255,255,255,0.5)', fontSize: '10px', cursor: 'pointer' }}
-                    >
-                      Cancel
-                    </button>
+                {products?.map(product => (
+                  <div
+                    key={product.slug}
+                    style={{
+                      display: 'grid', gridTemplateColumns: '60px 1fr 120px 110px 130px',
+                      gap: '16px', alignItems: 'center',
+                      padding: '12px 16px',
+                      background: deleteConfirm === product.slug ? 'rgba(255,80,80,0.06)' : 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.05)',
+                      borderRadius: '10px',
+                      transition: 'background 200ms',
+                    }}
+                  >
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      style={{ width: '52px', height: '64px', objectFit: 'cover', borderRadius: '6px' }}
+                    />
+                    <div>
+                      <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#fff' }}>{product.name}</p>
+                      <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>{product.slug}</p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: product.tint, flexShrink: 0 }} />
+                      <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', textTransform: 'capitalize' }}>{product.category}</span>
+                    </div>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>
+                      KSh {product.price.toLocaleString()}
+                    </span>
+
+                    {deleteConfirm === product.slug ? (
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          onClick={() => handleDelete(product.slug)}
+                          disabled={del.isPending}
+                          style={{ padding: '6px 14px', borderRadius: '999px', border: 'none', background: '#ff4444', color: '#fff', fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}
+                        >
+                          Confirm
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(null)}
+                          style={{ padding: '6px 10px', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: 'rgba(255,255,255,0.5)', fontSize: '10px', cursor: 'pointer' }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          onClick={() => { setEditing(product); setMode('edit'); setFormError(null); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                          style={{ padding: '6px 16px', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: 'rgba(255,255,255,0.7)', fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(product.slug)}
+                          style={{ padding: '6px 14px', borderRadius: '999px', border: '1px solid rgba(255,80,80,0.3)', background: 'transparent', color: 'rgba(255,100,100,0.8)', fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={() => { setEditing(product); setMode('edit'); setFormError(null); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                      style={{ padding: '6px 16px', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: 'rgba(255,255,255,0.7)', fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirm(product.slug)}
-                      style={{ padding: '6px 14px', borderRadius: '999px', border: '1px solid rgba(255,80,80,0.3)', background: 'transparent', color: 'rgba(255,100,100,0.8)', fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}
-                    >
-                      Delete
-                    </button>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {tab === 'users' && (
+          <>
+            <div style={{ marginBottom: '24px' }}>
+              <h1 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fff', margin: 0 }}>
+                Users
+              </h1>
+              <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'rgba(255,255,255,0.35)' }}>
+                {mongoUsers.length} registered
+              </p>
+            </div>
+
+            {usersLoading ? (
+              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '13px' }}>Loading…</p>
+            ) : usersError ? (
+              <p style={{ color: '#ff6b81', fontSize: '13px' }}>{usersError}</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <div style={{
+                  display: 'grid', gridTemplateColumns: '1fr 180px 200px',
+                  gap: '16px', padding: '10px 16px',
+                  fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                  color: 'rgba(255,255,255,0.3)',
+                }}>
+                  <span>Username</span>
+                  <span>Registered</span>
+                  <span>Last Login</span>
+                </div>
+
+                {mongoUsers.map(u => (
+                  <div key={u._id} style={{
+                    display: 'grid', gridTemplateColumns: '1fr 180px 200px',
+                    gap: '16px', alignItems: 'center',
+                    padding: '14px 16px',
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                    borderRadius: '10px',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{
+                        width: '32px', height: '32px', borderRadius: '50%',
+                        background: 'rgba(198,241,53,0.15)', border: '1px solid rgba(198,241,53,0.3)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '13px', fontWeight: 700, color: '#c6f135',
+                        flexShrink: 0,
+                      }}>
+                        {u.username[0].toUpperCase()}
+                      </div>
+                      <span style={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>{u.username}</span>
+                    </div>
+                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
+                      {new Date(u.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    </span>
+                    <span style={{ fontSize: '12px', color: u.lastLogin ? 'rgba(198,241,53,0.8)' : 'rgba(255,255,255,0.2)' }}>
+                      {u.lastLogin
+                        ? new Date(u.lastLogin).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                        : 'Never logged in'}
+                    </span>
                   </div>
+                ))}
+
+                {mongoUsers.length === 0 && (
+                  <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: '13px', textAlign: 'center', padding: '40px 0' }}>
+                    No users registered yet.
+                  </p>
                 )}
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </div>
     </div>
