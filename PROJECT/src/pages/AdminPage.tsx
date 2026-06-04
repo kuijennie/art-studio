@@ -10,7 +10,7 @@ import {
 } from '../hooks/useProducts'
 import type { Product, ProductFields } from '../hooks/useProducts'
 
-const API = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
+const API = import.meta.env.VITE_API_URL ?? ''
 
 interface MongoUser {
   _id: string

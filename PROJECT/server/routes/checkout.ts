@@ -4,10 +4,10 @@ import { Order } from '../models/Order'
 
 const router = Router()
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  apiVersion: '2025-04-30.basil' as any,
-})
+const stripeKey = process.env.STRIPE_SECRET_KEY
+const stripe = stripeKey
+  ? new Stripe(stripeKey, { apiVersion: '2025-04-30.basil' as any })
+  : null
 
 function makeOrderNumber(): string {
   return (
@@ -25,11 +25,15 @@ router.post('/checkout', async (req: Request, res: Response) => {
     return
   }
 
+  if (!stripe) {
+    res.status(503).json({ error: 'Payments not configured on this server.' })
+    return
+  }
+
   try {
     const shippingCost = amount >= 100 ? 0 : 500
     const total = amount + shippingCost
 
-    // Confirm payment immediately on the server
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(total * 100), // KES → smallest unit
       currency,

@@ -13,8 +13,10 @@ export interface Product {
 
 export type ProductFields = Omit<Product, '_id'>
 
+const BASE = import.meta.env.VITE_API_URL ?? ''
+
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, init)
+  const res = await fetch(`${BASE}${path}`, init)
   if (!res.ok) {
     const body = await res.text()
     throw new Error(body || `Request failed: ${res.status}`)

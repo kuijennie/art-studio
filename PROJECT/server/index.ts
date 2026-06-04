@@ -12,7 +12,8 @@ const app = express()
 const PORT = Number(process.env.PORT ?? 3001)
 const CLIENT_URL = process.env.CLIENT_URL ?? 'http://localhost:5173'
 
-app.use(cors({ origin: CLIENT_URL, credentials: true }))
+const allowedOrigins = [CLIENT_URL, 'https://art-studio-pearl.vercel.app']
+app.use(cors({ origin: allowedOrigins, credentials: true }))
 
 // Webhook must receive raw body for svix signature verification — register BEFORE express.json()
 app.use('/api', express.raw({ type: 'application/json' }), webhookRouter)
