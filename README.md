@@ -12,7 +12,7 @@ School of Computing and Informatics — Department of Information Technology
 | Lecturer | Michael Nyoro |
 | Semester | Year 4, Sem 2 |
 | GitHub | [kuijennie/art-studio](https://github.com/kuijennie/art-studio/tree/main) |
-| Project Document | [Advanced Web Final Report](https://eu.wps.com/cms/docs/d/cbPaspiRrACLxQh1) |
+| Project Document | [Advanced Web Final Report](https://eu.wps.com/cms/docs/d/cbPasrcgP08kXbiH) |
 
 ---
 
