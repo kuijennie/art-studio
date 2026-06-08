@@ -1,7 +1,7 @@
 # Art Studio
 
 **Mount Kenya University**
-School of Computing and Informatics — Department of Information Technology
+School of Computing and Informatics - Department of Information Technology
 
 | Field | Details |
 |---|---|
@@ -21,8 +21,8 @@ School of Computing and Informatics — Department of Information Technology
 Art Studio is a full-stack e-commerce web application for browsing and purchasing artwork online. The interface is designed to replicate the ambiance of a physical art museum, featuring a dynamic color theme that adapts to each artwork for an immersive gallery experience.
 
 The system supports two roles:
-- **Customer** — browse artworks, add to cart, checkout, and pay
-- **Admin** — manage products (add, edit, delete) and view orders
+- **Customer** - browse artworks, add to cart, checkout, and pay
+- **Admin** - manage products (add, edit, delete) and view orders
 
 ---
 
