@@ -43,7 +43,7 @@ The system supports two roles:
 - Checkout with contact, shipping, and order summary
 - Stripe payment integration
 - Clerk authentication (sign in / sign up)
-- Admin dashboard — full CRUD for artwork products
+- Admin dashboard - full CRUD for artwork products
 - Responsive design with dynamic background color theming per artwork
 
 ---

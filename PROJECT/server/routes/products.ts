@@ -33,9 +33,10 @@ router.post('/products', async (req, res) => {
 
 router.put('/products/:slug', async (req, res) => {
   try {
+    const { _id, slug, ...updateData } = req.body
     const product = await Product.findOneAndUpdate(
       { slug: req.params.slug },
-      req.body,
+      updateData,
       { new: true, runValidators: true }
     )
     if (!product) return res.status(404).json({ error: 'Not found' })

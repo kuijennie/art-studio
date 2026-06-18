@@ -205,6 +205,7 @@ export default function AdminPage() {
   const [mode, setMode] = useState<'idle' | 'add' | 'edit'>('idle')
   const [editing, setEditing] = useState<Product | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
+  const [successMsg, setSuccessMsg] = useState<string | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const { users: mongoUsers, loading: usersLoading, error: usersError } = useMongoUsers()
 
@@ -228,14 +229,18 @@ export default function AdminPage() {
 
   async function handleSave(form: ProductFields) {
     setFormError(null)
+    setSuccessMsg(null)
     try {
       if (mode === 'add') {
         await create.mutateAsync(form)
+        setSuccessMsg('Artwork added successfully!')
       } else if (mode === 'edit' && editing) {
         await update.mutateAsync({ slug: editing.slug, data: form })
+        setSuccessMsg('Artwork updated successfully!')
       }
       setMode('idle')
       setEditing(null)
+      setTimeout(() => setSuccessMsg(null), 3000)
     } catch (err: unknown) {
       setFormError(err instanceof Error ? err.message : 'Something went wrong')
     }
@@ -305,6 +310,12 @@ export default function AdminPage() {
               />
             )}
 
+            {successMsg && (
+              <p style={{ color: '#c6f135', fontSize: '13px', marginBottom: '16px', background: 'rgba(198,241,53,0.08)', padding: '10px 16px', borderRadius: '8px', border: '1px solid rgba(198,241,53,0.2)' }}>
+                {successMsg}
+              </p>
+            )}
+
             {/* Header row */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
               <div>
@@ -370,7 +381,7 @@ export default function AdminPage() {
                       <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>{product.slug}</p>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: product.tint, flexShrink: 0 }} />
+                      <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#3B82F6', flexShrink: 0 }} />
                       <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', textTransform: 'capitalize' }}>{product.category}</span>
                     </div>
                     <span style={{ fontSize: '13px', fontWeight: 600, color: '#fff' }}>

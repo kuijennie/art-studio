@@ -15,8 +15,8 @@ const CLIENT_URL = process.env.CLIENT_URL ?? 'http://localhost:5173'
 const allowedOrigins = [CLIENT_URL, 'https://art-studio-pearl.vercel.app']
 app.use(cors({ origin: allowedOrigins, credentials: true }))
 
-// Webhook must receive raw body for svix signature verification — register BEFORE express.json()
-app.use('/api', express.raw({ type: 'application/json' }), webhookRouter)
+// Webhook needs raw body for svix signature verification — scope it to that path only
+app.use('/api/webhooks/clerk', express.raw({ type: 'application/json' }))
 
 app.use(express.json())
 
@@ -25,6 +25,7 @@ app.use('/api', productsRouter)
 app.use('/api', checkoutRouter)
 app.use('/api', ordersRouter)
 app.use('/api', usersRouter)
+app.use('/api', webhookRouter)
 
 connectDB()
   .then(() => {
