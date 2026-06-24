@@ -8,6 +8,7 @@ import CheckoutPage from './pages/CheckoutPage'
 import SignInPage from './pages/SignInPage'
 import SignUpPage from './pages/SignUpPage'
 import AdminPage from './pages/AdminPage'
+import DashboardPage from './pages/DashboardPage'
 
 function RootLayout() {
   return (
@@ -63,21 +64,9 @@ const signInRoute = createRoute({
   component: SignInPage,
 })
 
-const signInSplatRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/sign-in/$',
-  component: SignInPage,
-})
-
 const signUpRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/sign-up',
-  component: SignUpPage,
-})
-
-const signUpSplatRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/sign-up/$',
   component: SignUpPage,
 })
 
@@ -87,15 +76,20 @@ const adminRoute = createRoute({
   component: AdminPage,
 })
 
+const dashboardRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/dashboard',
+  component: DashboardPage,
+})
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   productRoute,
   checkoutRoute,
   signInRoute,
-  signInSplatRoute,
   signUpRoute,
-  signUpSplatRoute,
   adminRoute,
+  dashboardRoute,
 ])
 
 export const router = createRouter({ routeTree })

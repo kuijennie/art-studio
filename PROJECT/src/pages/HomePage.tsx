@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Link } from '@tanstack/react-router'
 import { useProducts } from '../hooks/useProducts'
 import type { Product } from '../hooks/useProducts'
@@ -7,6 +7,7 @@ import type { ProductLayout } from '../data/products'
 import ProductCard from '../components/ProductCard'
 import { getPageBackground } from '../utils/color'
 import { useIsMobile } from '../hooks/useIsMobile'
+import { useAuth } from '../context/AuthContext'
 
 const OVERFLOW_COLS: { left: number; width: number }[] = [
   { left: 4,  width: 250 },
@@ -58,7 +59,17 @@ function MobileCard({ product }: { product: Product }) {
 export default function HomePage() {
   const { data: products, isLoading } = useProducts()
   const [hoveredTint, setHoveredTint] = useState<string | null>(null)
+  const [showWelcome, setShowWelcome] = useState(false)
   const isMobile = useIsMobile()
+  const { user, isAuthenticated } = useAuth()
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setShowWelcome(true)
+      const t = setTimeout(() => setShowWelcome(false), 4000)
+      return () => clearTimeout(t)
+    }
+  }, [isAuthenticated])
 
   const handleHover = useCallback((tint: string | null) => {
     setHoveredTint(tint)
@@ -72,10 +83,36 @@ export default function HomePage() {
     </div>
   )
 
+  const welcomeToast = showWelcome && user && (
+    <div style={{
+      position: 'fixed',
+      bottom: '32px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      zIndex: 200,
+      background: 'rgba(10,10,10,0.92)',
+      backdropFilter: 'blur(16px)',
+      border: '1px solid rgba(198,241,53,0.35)',
+      borderRadius: '999px',
+      padding: '12px 28px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+      animation: 'fadeInUp 0.3s ease',
+      whiteSpace: 'nowrap',
+    }}>
+      <span style={{ fontSize: '14px', fontWeight: 600, color: '#fff', letterSpacing: '0.02em' }}>
+        Welcome back, <span style={{ color: '#c6f135' }}>{user.fullname.split(' ')[0]}</span>!
+      </span>
+    </div>
+  )
+
   if (isMobile) {
     return (
       <div style={{ minHeight: '100vh', background: '#080808', padding: '88px 14px 60px' }}>
         {isLoading && spinner}
+        {welcomeToast}
         <div style={{ columns: 2, gap: '12px' }}>
           {(products ?? []).map(product => (
             <MobileCard key={product.slug} product={product} />
@@ -103,6 +140,7 @@ export default function HomePage() {
       }}
     >
       {isLoading && spinner}
+      {welcomeToast}
 
       {resolved.map(({ product, layout }) => (
         <ProductCard

@@ -2,10 +2,10 @@ import mongoose, { Schema, type Document } from 'mongoose'
 import bcrypt from 'bcryptjs'
 
 export interface IUser extends Document {
-  clerkId?: string
-  email?: string
-  username: string
-  password?: string
+  fullname: string
+  email: string
+  password: string
+  role: 'customer' | 'admin'
   lastLogin?: Date
   createdAt: Date
   updatedAt: Date
@@ -14,16 +14,15 @@ export interface IUser extends Document {
 
 const UserSchema = new Schema<IUser>(
   {
-    clerkId:   { type: String, unique: true, sparse: true },
-    email:     { type: String },
-    username:  { type: String, required: true, unique: true, maxlength: 100 },
-    password:  { type: String, maxlength: 100 },
+    fullname:  { type: String, required: true, maxlength: 100, trim: true },
+    email:     { type: String, required: true, unique: true, lowercase: true, trim: true },
+    password:  { type: String, required: true },
+    role:      { type: String, enum: ['customer', 'admin'], default: 'customer' },
     lastLogin: { type: Date, default: null },
   },
   { timestamps: true }
 )
 
-// Hash password before saving (only for manual users with a password)
 UserSchema.pre('save', async function () {
   if (this.isModified('password') && this.password) {
     this.password = await bcrypt.hash(this.password, 10)

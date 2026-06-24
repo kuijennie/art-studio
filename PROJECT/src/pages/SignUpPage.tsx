@@ -1,137 +1,355 @@
-import { SignUp } from '@clerk/clerk-react'
-
-const clerkAppearance = {
-  variables: {
-    colorBackground: 'rgba(12, 12, 16, 0.72)',
-    colorPrimary: '#c6f135',
-    colorText: '#ffffff',
-    colorTextSecondary: 'rgba(255,255,255,0.55)',
-    colorTextOnPrimaryBackground: '#0a0a0a',
-    colorInputBackground: 'rgba(255,255,255,0.06)',
-    colorInputText: '#ffffff',
-    colorNeutral: 'rgba(255,255,255,0.12)',
-    borderRadius: '12px',
-    fontFamily: 'Inter, system-ui, sans-serif',
-    fontSize: '14px',
-  },
-  elements: {
-    card: {
-      background: 'rgba(255,255,255,0.055)',
-      backdropFilter: 'blur(24px)',
-      WebkitBackdropFilter: 'blur(24px)',
-      border: '1px solid rgba(255,255,255,0.10)',
-      boxShadow: '0 40px 80px rgba(0,0,0,0.5)',
-      borderRadius: '20px',
-      padding: '8px',
-    },
-    headerTitle: {
-      color: '#ffffff',
-      fontSize: '20px',
-      fontWeight: '700',
-      letterSpacing: '0.06em',
-      textTransform: 'uppercase',
-    },
-    headerSubtitle: {
-      color: 'rgba(255,255,255,0.5)',
-      fontSize: '12px',
-      letterSpacing: '0.04em',
-    },
-    socialButtonsBlockButton: {
-      background: 'rgba(255,255,255,0.07)',
-      border: '1px solid rgba(255,255,255,0.12)',
-      color: '#ffffff',
-      borderRadius: '10px',
-    },
-    dividerLine: {
-      background: 'rgba(255,255,255,0.1)',
-    },
-    dividerText: {
-      color: 'rgba(255,255,255,0.35)',
-      fontSize: '11px',
-      letterSpacing: '0.1em',
-    },
-    formFieldLabel: {
-      color: 'rgba(255,255,255,0.65)',
-      fontSize: '11px',
-      fontWeight: '600',
-      letterSpacing: '0.1em',
-      textTransform: 'uppercase',
-    },
-    formFieldInput: {
-      background: 'rgba(255,255,255,0.06)',
-      border: '1px solid rgba(255,255,255,0.12)',
-      color: '#ffffff',
-      borderRadius: '10px',
-    },
-    formButtonPrimary: {
-      background: '#c6f135',
-      color: '#0a0a0a',
-      fontWeight: '700',
-      fontSize: '12px',
-      letterSpacing: '0.16em',
-      textTransform: 'uppercase',
-      borderRadius: '999px',
-      border: 'none',
-    },
-    footerActionLink: {
-      color: '#c6f135',
-    },
-  },
-}
+import { useState, type FormEvent } from 'react'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { useAuth } from '../context/AuthContext'
 
 export default function SignUpPage() {
-  return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background:
-          'radial-gradient(ellipse at 50% 35%, #1a2a1a 0%, #0d1a12 25%, #0a0a0a 75%, #000000 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        gap: '32px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '6px',
-        }}
-      >
-        <span
-          style={{
-            fontSize: '13px',
-            fontWeight: 700,
-            letterSpacing: '0.32em',
-            textTransform: 'uppercase',
-            color: '#ffffff',
-          }}
-        >
-          LALAPJ
-        </span>
-        <span
-          style={{
-            fontSize: '11px',
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.38)',
-          }}
-        >
-          Create your account
-        </span>
-      </div>
+  const { register, isAuthenticated } = useAuth()
+  const navigate = useNavigate()
 
-      <SignUp
-        appearance={clerkAppearance}
-        afterSignUpUrl="/"
-        signInUrl="/sign-in"
-        routing="path"
-        path="/sign-up"
-      />
+  const [fullname, setFullname] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+
+  if (isAuthenticated) {
+    navigate({ to: '/' })
+    return null
+  }
+
+  function passwordStrength(p: string): { label: string; color: string; width: string } {
+    if (p.length === 0) return { label: '', color: 'transparent', width: '0%' }
+    if (p.length < 6) return { label: 'Too short', color: '#ff6b6b', width: '25%' }
+    if (p.length < 8) return { label: 'Weak', color: '#ffa94d', width: '50%' }
+    const hasUpper = /[A-Z]/.test(p)
+    const hasNum = /[0-9]/.test(p)
+    const hasSymbol = /[^A-Za-z0-9]/.test(p)
+    const extras = [hasUpper, hasNum, hasSymbol].filter(Boolean).length
+    if (extras >= 2) return { label: 'Strong', color: '#c6f135', width: '100%' }
+    return { label: 'Medium', color: '#74c0fc', width: '75%' }
+  }
+
+  const strength = passwordStrength(password)
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    setError('')
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters')
+      return
+    }
+
+    setLoading(true)
+    try {
+      await register(fullname.trim(), email, password)
+      navigate({ to: '/' })
+    } catch (err: any) {
+      setError(err.message ?? 'Registration failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div style={styles.page}>
+      <div aria-hidden="true" style={styles.grain} />
+
+      <div style={styles.card}>
+        {/* Logo */}
+        <div style={styles.logoBlock}>
+          <Link to="/" style={styles.logoLink}>
+            <span style={styles.logoText}>ART STUDIO</span>
+          </Link>
+          <span style={styles.logoSub}>Create your account</span>
+        </div>
+
+        <form onSubmit={handleSubmit} style={styles.form}>
+          {/* Full Name */}
+          <div style={styles.field}>
+            <label style={styles.label}>FULL NAME</label>
+            <input
+              type="text"
+              value={fullname}
+              onChange={e => setFullname(e.target.value)}
+              placeholder="Jane Wangui"
+              required
+              autoComplete="name"
+              style={styles.input}
+              onFocus={e => Object.assign(e.currentTarget.style, styles.inputFocus)}
+              onBlur={e => Object.assign(e.currentTarget.style, styles.input)}
+            />
+          </div>
+
+          {/* Email */}
+          <div style={styles.field}>
+            <label style={styles.label}>EMAIL</label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+              autoComplete="email"
+              style={styles.input}
+              onFocus={e => Object.assign(e.currentTarget.style, styles.inputFocus)}
+              onBlur={e => Object.assign(e.currentTarget.style, styles.input)}
+            />
+          </div>
+
+          {/* Password */}
+          <div style={styles.field}>
+            <label style={styles.label}>PASSWORD</label>
+            <div style={styles.passwordWrap}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Min. 6 characters"
+                required
+                autoComplete="new-password"
+                style={{ ...styles.input, paddingRight: '44px' }}
+                onFocus={e => Object.assign(e.currentTarget.style, { ...styles.inputFocus, paddingRight: '44px' })}
+                onBlur={e => Object.assign(e.currentTarget.style, { ...styles.input, paddingRight: '44px' })}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
+                style={styles.eyeBtn}
+                tabIndex={-1}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? '🙈' : '👁'}
+              </button>
+            </div>
+            {/* Password strength bar */}
+            {password.length > 0 && (
+              <div style={styles.strengthWrap}>
+                <div style={styles.strengthTrack}>
+                  <div
+                    style={{
+                      height: '100%',
+                      width: strength.width,
+                      background: strength.color,
+                      borderRadius: '999px',
+                      transition: 'width 0.3s, background 0.3s',
+                    }}
+                  />
+                </div>
+                <span style={{ ...styles.strengthLabel, color: strength.color }}>
+                  {strength.label}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Confirm Password */}
+          <div style={styles.field}>
+            <label style={styles.label}>CONFIRM PASSWORD</label>
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              placeholder="Repeat password"
+              required
+              autoComplete="new-password"
+              style={{
+                ...styles.input,
+                borderColor: confirmPassword && confirmPassword !== password
+                  ? 'rgba(255,80,80,0.5)'
+                  : confirmPassword && confirmPassword === password
+                  ? 'rgba(198,241,53,0.4)'
+                  : undefined,
+              }}
+              onFocus={e => Object.assign(e.currentTarget.style, styles.inputFocus)}
+              onBlur={e => Object.assign(e.currentTarget.style, styles.input)}
+            />
+          </div>
+
+          {/* Error */}
+          {error && <p style={styles.error}>{error}</p>}
+
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            style={loading ? { ...styles.btn, opacity: 0.6, cursor: 'not-allowed' } : styles.btn}
+          >
+            {loading ? 'CREATING ACCOUNT…' : 'CREATE ACCOUNT'}
+          </button>
+        </form>
+
+        <p style={styles.footer}>
+          Already have an account?{' '}
+          <Link to="/sign-in" style={styles.footerLink}>
+            Sign in
+          </Link>
+        </p>
+      </div>
     </div>
   )
+}
+
+const styles: Record<string, React.CSSProperties> = {
+  page: {
+    minHeight: '100vh',
+    background: 'radial-gradient(ellipse at 50% 35%, #1a2a1a 0%, #0d1a12 25%, #0a0a0a 75%, #000 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '24px',
+    fontFamily: 'Inter, system-ui, sans-serif',
+  },
+  grain: {
+    position: 'fixed',
+    inset: 0,
+    backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'0.04\'/%3E%3C/svg%3E")',
+    pointerEvents: 'none',
+    zIndex: 0,
+  },
+  card: {
+    position: 'relative',
+    zIndex: 1,
+    width: '100%',
+    maxWidth: '400px',
+    background: 'rgba(255,255,255,0.055)',
+    backdropFilter: 'blur(24px)',
+    WebkitBackdropFilter: 'blur(24px)',
+    border: '1px solid rgba(255,255,255,0.10)',
+    borderRadius: '20px',
+    padding: '40px 36px',
+    boxShadow: '0 40px 80px rgba(0,0,0,0.5)',
+  },
+  logoBlock: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '6px',
+    marginBottom: '32px',
+  },
+  logoLink: { textDecoration: 'none' },
+  logoText: {
+    fontSize: '15px',
+    fontWeight: 700,
+    letterSpacing: '0.32em',
+    textTransform: 'uppercase',
+    color: '#ffffff',
+  },
+  logoSub: {
+    fontSize: '11px',
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase',
+    color: 'rgba(255,255,255,0.38)',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  field: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+  },
+  label: {
+    fontSize: '10px',
+    fontWeight: 600,
+    letterSpacing: '0.12em',
+    color: 'rgba(255,255,255,0.55)',
+  },
+  input: {
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,0.12)',
+    borderRadius: '10px',
+    padding: '12px 14px',
+    color: '#ffffff',
+    fontSize: '14px',
+    outline: 'none',
+    transition: 'border-color 0.2s',
+    width: '100%',
+    boxSizing: 'border-box',
+  },
+  inputFocus: {
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(198,241,53,0.5)',
+    borderRadius: '10px',
+    padding: '12px 14px',
+    color: '#ffffff',
+    fontSize: '14px',
+    outline: 'none',
+    width: '100%',
+    boxSizing: 'border-box',
+  },
+  passwordWrap: { position: 'relative' },
+  eyeBtn: {
+    position: 'absolute',
+    right: '12px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '14px',
+    padding: '2px',
+    lineHeight: 1,
+  },
+  strengthWrap: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginTop: '4px',
+  },
+  strengthTrack: {
+    flex: 1,
+    height: '3px',
+    background: 'rgba(255,255,255,0.1)',
+    borderRadius: '999px',
+    overflow: 'hidden',
+  },
+  strengthLabel: {
+    fontSize: '10px',
+    fontWeight: 600,
+    letterSpacing: '0.08em',
+    minWidth: '44px',
+  },
+  error: {
+    margin: 0,
+    padding: '10px 14px',
+    background: 'rgba(255,80,80,0.12)',
+    border: '1px solid rgba(255,80,80,0.3)',
+    borderRadius: '8px',
+    color: '#ff8080',
+    fontSize: '13px',
+  },
+  btn: {
+    marginTop: '4px',
+    padding: '13px',
+    background: '#c6f135',
+    color: '#0a0a0a',
+    border: 'none',
+    borderRadius: '999px',
+    fontWeight: 700,
+    fontSize: '12px',
+    letterSpacing: '0.16em',
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    transition: 'opacity 0.2s',
+  },
+  footer: {
+    marginTop: '24px',
+    textAlign: 'center',
+    fontSize: '13px',
+    color: 'rgba(255,255,255,0.45)',
+  },
+  footerLink: {
+    color: '#c6f135',
+    textDecoration: 'none',
+    fontWeight: 600,
+  },
 }

@@ -9,7 +9,7 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js'
-import { useUser } from '@clerk/clerk-react'
+import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 
 const STRIPE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
@@ -144,11 +144,11 @@ function CheckoutForm() {
   const stripe = useStripe()
   const elements = useElements()
   const { items, clearCart, closeCart } = useCart()
-  const { user } = useUser()
+  const { user } = useAuth()
 
   const [form, setForm] = useState({
-    email: user?.emailAddresses[0]?.emailAddress ?? '',
-    name: user?.fullName ?? '',
+    email: user?.email ?? '',
+    name: user?.fullname ?? '',
     phone: '',
     address: '',
     city: '',

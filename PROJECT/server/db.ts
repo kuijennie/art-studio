@@ -8,5 +8,11 @@ export async function connectDB() {
     serverSelectionTimeoutMS: 15000,
     family: 4,
   })
+
+  // Strip any legacy MongoDB-level validators left over from old schema
+  const db = mongoose.connection.db!
+  await db.command({ collMod: 'users', validator: {}, validationLevel: 'off' })
+    .catch(() => {}) // silently skip if collection doesn't exist yet
+
   console.log('[db] Connected to MongoDB')
 }

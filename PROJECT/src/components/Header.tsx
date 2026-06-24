@@ -1,12 +1,8 @@
-import { useState } from 'react'
-import { Link } from '@tanstack/react-router'
-import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/clerk-react'
+import { useState, useRef, useEffect } from 'react'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useIsMobile } from '../hooks/useIsMobile'
-
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL as string
-
-const CURRENCIES = ['KSH']
 
 interface HeaderProps {
   darkMode?: boolean
@@ -14,9 +10,11 @@ interface HeaderProps {
 
 export default function Header({ darkMode = false }: HeaderProps) {
   const { totalItems, openCart } = useCart()
-  const [currency, setCurrency] = useState('KSH')
-  const { user } = useUser()
-  const isAdmin = !!user?.primaryEmailAddress?.emailAddress && user.primaryEmailAddress.emailAddress === ADMIN_EMAIL
+  const { user, isAuthenticated, isAdmin, logout } = useAuth()
+  const navigate = useNavigate()
+  const [currency] = useState('KSH')
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
 
   const textColor = darkMode ? 'rgba(255,255,255,0.92)' : '#111111'
@@ -40,6 +38,28 @@ export default function Header({ darkMode = false }: HeaderProps) {
     cursor: 'pointer',
   }
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  function handleLogout() {
+    setDropdownOpen(false)
+    logout()
+    navigate({ to: '/' })
+  }
+
+  // Initials avatar
+  const initials = user?.fullname
+    ? user.fullname.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    : '?'
+
   return (
     <header
       style={{
@@ -58,7 +78,12 @@ export default function Header({ darkMode = false }: HeaderProps) {
       {/* Brand */}
       <Link
         to="/"
-        style={{ ...pillStyle, pointerEvents: 'auto', textDecoration: 'none', padding: isMobile ? '6px 12px' : '8px 18px' }}
+        style={{
+          ...pillStyle,
+          pointerEvents: 'auto',
+          textDecoration: 'none',
+          padding: isMobile ? '6px 12px' : '8px 18px',
+        }}
       >
         <span
           style={{
@@ -75,31 +100,35 @@ export default function Header({ darkMode = false }: HeaderProps) {
       </Link>
 
       {/* Right pills */}
-      <div style={{ display: 'flex', gap: isMobile ? '6px' : '10px', pointerEvents: 'auto', alignItems: 'center' }}>
-        {/* Currency — hidden on mobile (only one option) */}
+      <div
+        style={{
+          display: 'flex',
+          gap: isMobile ? '6px' : '10px',
+          pointerEvents: 'auto',
+          alignItems: 'center',
+        }}
+      >
+        {/* Currency — hidden on mobile */}
         {!isMobile && (
-        <div style={pillStyle}>
-          <select
-            value={currency}
-            onChange={e => setCurrency(e.target.value)}
-            style={{
-              fontSize: '12px',
-              fontWeight: 600,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: textColor,
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              cursor: 'pointer',
-              transition: 'color 700ms ease-out',
-            }}
-          >
-            {CURRENCIES.map(c => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </div>
+          <div style={pillStyle}>
+            <select
+              value={currency}
+              style={{
+                fontSize: '12px',
+                fontWeight: 600,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: textColor,
+                background: 'transparent',
+                border: 'none',
+                outline: 'none',
+                cursor: 'pointer',
+                transition: 'color 700ms ease-out',
+              }}
+            >
+              <option value="KSH">KSH</option>
+            </select>
+          </div>
         )}
 
         {/* Cart */}
@@ -110,8 +139,6 @@ export default function Header({ darkMode = false }: HeaderProps) {
             gap: '6px',
             minWidth: isMobile ? '54px' : '72px',
             justifyContent: 'center',
-            background: pillBg,
-            border: pillBorder,
             padding: isMobile ? '6px 12px' : '8px 18px',
           }}
         >
@@ -143,23 +170,7 @@ export default function Header({ darkMode = false }: HeaderProps) {
           </span>
         </button>
 
-        {/* Auth */}
-        <SignedOut>
-          <Link
-            to="/sign-in"
-            style={{
-              ...pillStyle,
-              textDecoration: 'none',
-              fontSize: '11px',
-              fontWeight: 700,
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-            }}
-          >
-            Sign In
-          </Link>
-        </SignedOut>
-
+        {/* Admin link */}
         {isAdmin && (
           <Link
             to="/admin"
@@ -176,25 +187,212 @@ export default function Header({ darkMode = false }: HeaderProps) {
           </Link>
         )}
 
-        <SignedIn>
-          <div
+        {/* Auth: not signed in */}
+        {!isAuthenticated && (
+          <Link
+            to="/sign-in"
             style={{
               ...pillStyle,
-              padding: '6px 6px',
-              justifyContent: 'center',
+              textDecoration: 'none',
+              fontSize: '11px',
+              fontWeight: 700,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
             }}
           >
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: { width: '28px', height: '28px' },
-                },
+            Sign In
+          </Link>
+        )}
+
+        {/* Auth: signed in — avatar + dropdown */}
+        {isAuthenticated && (
+          <div ref={dropdownRef} style={{ position: 'relative' }}>
+            <button
+              onClick={() => setDropdownOpen(v => !v)}
+              style={{
+                ...pillStyle,
+                padding: '6px 14px 6px 8px',
+                gap: '8px',
               }}
-              afterSignOutUrl="/"
-            />
+              aria-label="User menu"
+            >
+              {/* Avatar circle */}
+              <span
+                style={{
+                  width: '26px',
+                  height: '26px',
+                  borderRadius: '50%',
+                  background: '#c6f135',
+                  color: '#0a0a0a',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  letterSpacing: '0.04em',
+                  flexShrink: 0,
+                }}
+              >
+                {initials}
+              </span>
+              {!isMobile && (
+                <span
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: textColor,
+                    maxWidth: '100px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {user?.fullname?.split(' ')[0]}
+                </span>
+              )}
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 6"
+                fill="none"
+                stroke={textColor}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                style={{
+                  transition: 'transform 0.2s',
+                  transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  flexShrink: 0,
+                }}
+              >
+                <path d="M1 1l4 4 4-4" />
+              </svg>
+            </button>
+
+            {/* Dropdown */}
+            {dropdownOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  right: 0,
+                  minWidth: '180px',
+                  background: 'rgba(15,15,15,0.95)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  borderRadius: '14px',
+                  padding: '8px',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+                }}
+              >
+                {/* User info */}
+                <div
+                  style={{
+                    padding: '10px 12px 12px',
+                    borderBottom: '1px solid rgba(255,255,255,0.08)',
+                    marginBottom: '4px',
+                  }}
+                >
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      color: '#fff',
+                    }}
+                  >
+                    {user?.fullname}
+                  </p>
+                  <p
+                    style={{
+                      margin: '2px 0 0',
+                      fontSize: '11px',
+                      color: 'rgba(255,255,255,0.4)',
+                    }}
+                  >
+                    {user?.email}
+                  </p>
+                  {isAdmin && (
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        marginTop: '6px',
+                        padding: '2px 8px',
+                        background: 'rgba(198,241,53,0.15)',
+                        border: '1px solid rgba(198,241,53,0.3)',
+                        borderRadius: '999px',
+                        fontSize: '9px',
+                        fontWeight: 700,
+                        letterSpacing: '0.1em',
+                        color: '#c6f135',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      Admin
+                    </span>
+                  )}
+                </div>
+
+                {/* Menu items */}
+                <DropdownItem
+                  label="My Dashboard"
+                  onClick={() => { setDropdownOpen(false); navigate({ to: '/dashboard' }) }}
+                />
+                {isAdmin && (
+                  <DropdownItem
+                    label="Admin Dashboard"
+                    onClick={() => { setDropdownOpen(false); navigate({ to: '/admin' }) }}
+                  />
+                )}
+                <DropdownItem
+                  label="Sign Out"
+                  onClick={handleLogout}
+                  danger
+                />
+              </div>
+            )}
           </div>
-        </SignedIn>
+        )}
       </div>
     </header>
+  )
+}
+
+function DropdownItem({
+  label,
+  onClick,
+  danger = false,
+}: {
+  label: string
+  onClick: () => void
+  danger?: boolean
+}) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'block',
+        width: '100%',
+        padding: '9px 12px',
+        background: hovered
+          ? danger
+            ? 'rgba(255,80,80,0.1)'
+            : 'rgba(255,255,255,0.07)'
+          : 'transparent',
+        border: 'none',
+        borderRadius: '8px',
+        textAlign: 'left',
+        fontSize: '13px',
+        fontWeight: 500,
+        color: danger ? '#ff8080' : 'rgba(255,255,255,0.85)',
+        cursor: 'pointer',
+        transition: 'background 0.15s',
+      }}
+    >
+      {label}
+    </button>
   )
 }

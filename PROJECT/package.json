@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "seed": "tsx server/seed.ts",
     "createdb": "tsx server/createdb.ts",
-    "crud-demo": "tsx server/crud-demo.ts"
+    "crud-demo": "tsx server/crud-demo.ts",
+    "reset-users": "tsx server/resetUsers.ts"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.6",
@@ -23,6 +24,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.24.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -33,6 +35,7 @@
     "@tailwindcss/vite": "^4.1.4",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.8.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
