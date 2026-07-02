@@ -100,7 +100,10 @@ export default function HomePage() {
       gap: '10px',
       boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       animation: 'fadeInUp 0.3s ease',
-      whiteSpace: 'nowrap',
+      whiteSpace: isMobile ? 'normal' : 'nowrap',
+      width: isMobile ? 'calc(100% - 28px)' : 'auto',
+      maxWidth: isMobile ? '360px' : 'none',
+      textAlign: 'center',
     }}>
       <span style={{ fontSize: '14px', fontWeight: 600, color: '#fff', letterSpacing: '0.02em' }}>
         Welcome back, <span style={{ color: '#c6f135' }}>{user.fullname.split(' ')[0]}</span>!

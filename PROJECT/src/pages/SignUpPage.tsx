@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useAuth } from '../context/AuthContext'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 export default function SignUpPage() {
   const { register, isAuthenticated } = useAuth()
@@ -13,6 +14,7 @@ export default function SignUpPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const isMobile = useIsMobile()
 
   if (isAuthenticated) {
     navigate({ to: '/' })
@@ -58,16 +60,16 @@ export default function SignUpPage() {
   }
 
   return (
-    <div style={styles.page}>
+    <div style={{ ...styles.page, alignItems: isMobile ? 'flex-start' : 'center', padding: isMobile ? '20px 14px 28px' : '24px' }}>
       <div aria-hidden="true" style={styles.grain} />
 
-      <div style={styles.card}>
+      <div style={{ ...styles.card, marginTop: isMobile ? '72px' : 0, padding: isMobile ? '28px 20px' : '40px 36px', borderRadius: isMobile ? '16px' : '20px' }}>
         {/* Logo */}
         <div style={styles.logoBlock}>
           <Link to="/" style={styles.logoLink}>
-            <span style={styles.logoText}>ART STUDIO</span>
+            <span style={{ ...styles.logoText, fontSize: isMobile ? '13px' : '15px', letterSpacing: isMobile ? '0.24em' : '0.32em' }}>ART STUDIO</span>
           </Link>
-          <span style={styles.logoSub}>Create your account</span>
+          <span style={{ ...styles.logoSub, textAlign: 'center' }}>Create your account</span>
         </div>
 
         <form onSubmit={handleSubmit} style={styles.form}>

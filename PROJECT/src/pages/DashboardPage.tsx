@@ -1,12 +1,13 @@
 import { useEffect } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useAuth } from '../context/AuthContext'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 export default function DashboardPage() {
   const { user, isAuthenticated, isLoading, logout } = useAuth()
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
-  // Protect the page — redirect if not logged in
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       navigate({ to: '/sign-in' })
@@ -29,24 +30,21 @@ export default function DashboardPage() {
 
   return (
     <div style={s.page}>
-      {/* Header bar */}
-      <div style={s.topbar}>
-        <Link to="/" style={s.brand}>ART STUDIO</Link>
+      <div style={{ ...s.topbar, padding: isMobile ? '18px 16px' : '20px 40px', flexWrap: isMobile ? 'wrap' : 'nowrap', gap: isMobile ? '12px' : 0 }}>
+        <Link to="/" style={{ ...s.brand, fontSize: isMobile ? '13px' : '15px', letterSpacing: isMobile ? '0.18em' : '0.28em' }}>ART STUDIO</Link>
         <button onClick={handleLogout} style={s.logoutBtn}>Sign Out</button>
       </div>
 
-      <div style={s.body}>
-        {/* Welcome card */}
-        <div style={s.welcomeCard}>
+      <div style={{ ...s.body, padding: isMobile ? '28px 16px 48px' : '60px 24px 80px', gap: isMobile ? '20px' : '32px' }}>
+        <div style={{ ...s.welcomeCard, flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', padding: isMobile ? '22px 18px' : '28px 32px' }}>
           <div style={s.avatar}>{initials}</div>
           <div>
-            <h1 style={s.welcome}>Welcome, {user.fullname.split(' ')[0]} 👋</h1>
+            <h1 style={{ ...s.welcome, fontSize: isMobile ? '22px' : '26px' }}>Welcome, {user.fullname.split(' ')[0]}</h1>
             <p style={s.subtitle}>You are signed in to ART STUDIO</p>
           </div>
         </div>
 
-        {/* Info grid */}
-        <div style={s.grid}>
+        <div style={{ ...s.grid, gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr' }}>
           <InfoCard label="Full Name" value={user.fullname} />
           <InfoCard label="Email Address" value={user.email} />
           <InfoCard
@@ -57,30 +55,27 @@ export default function DashboardPage() {
           <InfoCard label="Session" value="Active" highlight />
         </div>
 
-        {/* Role-based section */}
         {user.role === 'admin' ? (
-          <div style={s.section}>
+          <div style={{ ...s.section, padding: isMobile ? '22px 18px' : '28px 32px' }}>
             <h2 style={s.sectionTitle}>Admin Controls</h2>
             <p style={s.sectionText}>
               You have administrator access. Manage products, view orders, and control user accounts from the admin dashboard.
             </p>
-            <Link to="/admin" style={s.actionBtn}>Go to Admin Dashboard →</Link>
+            <Link to="/admin" style={{ ...s.actionBtn, width: isMobile ? '100%' : 'fit-content', textAlign: 'center' }}>Go to Admin Dashboard</Link>
           </div>
         ) : (
-          <div style={s.section}>
+          <div style={{ ...s.section, padding: isMobile ? '22px 18px' : '28px 32px' }}>
             <h2 style={s.sectionTitle}>Your Account</h2>
             <p style={s.sectionText}>
               Browse our collection, add artworks to your cart, and complete purchases securely.
             </p>
-            <Link to="/" style={s.actionBtn}>Browse Artworks →</Link>
+            <Link to="/" style={{ ...s.actionBtn, width: isMobile ? '100%' : 'fit-content', textAlign: 'center' }}>Browse Artworks</Link>
           </div>
         )}
 
-        {/* Session info box */}
-        <div style={s.sessionBox}>
+        <div style={{ ...s.sessionBox, padding: isMobile ? '16px 18px' : '18px 22px' }}>
           <p style={s.sessionNote}>
-            🔒 Your session is protected with a JSON Web Token (JWT). This token is stored securely
-            and sent with every request to verify your identity without exposing your password.
+            Your session is protected with a JSON Web Token (JWT). This token is stored securely and sent with every request to verify your identity.
           </p>
         </div>
       </div>
@@ -116,13 +111,10 @@ const s: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '20px 40px',
     borderBottom: '1px solid rgba(255,255,255,0.07)',
   },
   brand: {
-    fontSize: '15px',
     fontWeight: 700,
-    letterSpacing: '0.28em',
     textTransform: 'uppercase',
     color: '#fff',
     textDecoration: 'none',
@@ -142,19 +134,15 @@ const s: Record<string, React.CSSProperties> = {
   body: {
     maxWidth: '760px',
     margin: '0 auto',
-    padding: '60px 24px 80px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '32px',
   },
   welcomeCard: {
     display: 'flex',
-    alignItems: 'center',
     gap: '20px',
     background: 'rgba(255,255,255,0.05)',
     border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: '16px',
-    padding: '28px 32px',
   },
   avatar: {
     width: '60px',
@@ -172,7 +160,6 @@ const s: Record<string, React.CSSProperties> = {
   },
   welcome: {
     margin: 0,
-    fontSize: '26px',
     fontWeight: 700,
     letterSpacing: '-0.01em',
   },
@@ -183,7 +170,6 @@ const s: Record<string, React.CSSProperties> = {
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
     gap: '12px',
   },
   card: {
@@ -205,12 +191,12 @@ const s: Record<string, React.CSSProperties> = {
   cardValue: {
     fontSize: '15px',
     fontWeight: 600,
+    overflowWrap: 'anywhere',
   },
   section: {
     background: 'rgba(255,255,255,0.04)',
     border: '1px solid rgba(255,255,255,0.08)',
     borderRadius: '16px',
-    padding: '28px 32px',
     display: 'flex',
     flexDirection: 'column',
     gap: '12px',
@@ -239,10 +225,8 @@ const s: Record<string, React.CSSProperties> = {
     letterSpacing: '0.14em',
     textTransform: 'uppercase',
     textDecoration: 'none',
-    width: 'fit-content',
   },
   sessionBox: {
-    padding: '18px 22px',
     background: 'rgba(198,241,53,0.06)',
     border: '1px solid rgba(198,241,53,0.15)',
     borderRadius: '12px',

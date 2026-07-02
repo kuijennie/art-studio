@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useCart } from '../context/CartContext'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 export default function CartDrawer() {
   const { items, totalItems, isOpen, closeCart, removeItem } = useCart()
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
   const subtotal = items.reduce(
     (sum, i) => sum + i.product.price * i.quantity,
@@ -61,7 +63,7 @@ export default function CartDrawer() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '24px 28px',
+            padding: isMobile ? '20px 18px' : '24px 28px',
             borderBottom: '1px solid rgba(255,255,255,0.07)',
           }}
         >
@@ -116,7 +118,7 @@ export default function CartDrawer() {
         </div>
 
         {/* Items */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 28px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '16px 18px' : '16px 28px' }}>
           {items.length === 0 ? (
             <div
               style={{
@@ -249,7 +251,7 @@ export default function CartDrawer() {
         {items.length > 0 && (
           <div
             style={{
-              padding: '20px 28px 32px',
+              padding: isMobile ? '18px 18px calc(24px + env(safe-area-inset-bottom))' : '20px 28px 32px',
               borderTop: '1px solid rgba(255,255,255,0.07)',
               display: 'flex',
               flexDirection: 'column',

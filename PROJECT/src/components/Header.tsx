@@ -171,7 +171,7 @@ export default function Header({ darkMode = false }: HeaderProps) {
         </button>
 
         {/* Admin link */}
-        {isAdmin && (
+        {isAdmin && !isMobile && (
           <Link
             to="/admin"
             style={{
@@ -200,7 +200,7 @@ export default function Header({ darkMode = false }: HeaderProps) {
               textTransform: 'uppercase',
             }}
           >
-            Sign In
+            {isMobile ? 'Login' : 'Sign In'}
           </Link>
         )}
 

@@ -11,6 +11,7 @@ import {
 } from '@stripe/react-stripe-js'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 const STRIPE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
 const stripeReady = STRIPE_KEY && !STRIPE_KEY.includes('YOUR_STRIPE_KEY')
@@ -158,6 +159,7 @@ function CheckoutForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [orderNumber, setOrderNumber] = useState<string | null>(null)
+  const isMobile = useIsMobile()
 
   const subtotal = items.reduce((s, i) => s + i.product.price * i.quantity, 0)
   const shipping = subtotal >= 100 ? 0 : 500
@@ -315,7 +317,7 @@ function CheckoutForm() {
                   onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
                 />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
                 <div>
                   <label style={labelStyle}>City *</label>
                   <input
@@ -389,7 +391,7 @@ function CheckoutForm() {
                   <CardNumberElement options={CARD_STYLE} />
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '12px' }}>
                 <div>
                   <label style={labelStyle}>Expiry</label>
                   <div style={stripeFieldStyle}>
@@ -470,9 +472,9 @@ function CheckoutForm() {
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.07)',
             borderRadius: '16px',
-            padding: '24px',
-            position: 'sticky',
-            top: '100px',
+            padding: isMobile ? '20px' : '24px',
+            position: isMobile ? 'static' : 'sticky',
+            top: isMobile ? 'auto' : '100px',
           }}
         >
           <h2 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', margin: '0 0 20px' }}>
@@ -564,6 +566,7 @@ function CheckoutForm() {
 export default function CheckoutPage() {
   const { items } = useCart()
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
   return (
     <div
@@ -579,7 +582,9 @@ export default function CheckoutPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '22px 40px',
+          flexWrap: isMobile ? 'wrap' : 'nowrap',
+          gap: isMobile ? '14px' : '0',
+          padding: isMobile ? '18px 16px' : '22px 40px',
           borderBottom: '1px solid rgba(255,255,255,0.06)',
           marginBottom: '48px',
         }}
@@ -619,7 +624,7 @@ export default function CheckoutPage() {
         </button>
       </div>
 
-      <div style={{ maxWidth: '960px', margin: '0 auto', padding: '0 24px' }}>
+      <div style={{ maxWidth: '960px', margin: '0 auto', padding: isMobile ? '0 16px' : '0 24px' }}>
         <h1
           style={{
             fontSize: 'clamp(20px, 3vw, 28px)',
@@ -672,6 +677,7 @@ export default function CheckoutPage() {
         @media (max-width: 680px) {
           .checkout-grid {
             grid-template-columns: 1fr !important;
+            gap: 24px !important;
           }
         }
       `}</style>

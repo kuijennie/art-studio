@@ -3,6 +3,7 @@ import { useProduct } from '../hooks/useProducts'
 import { useCart } from '../context/CartContext'
 import { buildSpotlightGradient } from '../utils/color'
 import { useState } from 'react'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 export default function ProductPage() {
   const params = useParams({ strict: false })
@@ -11,6 +12,7 @@ export default function ProductPage() {
   const { addItem } = useCart()
   const [added, setAdded] = useState(false)
   const [lightbox, setLightbox] = useState(false)
+  const isMobile = useIsMobile()
 
   if (isLoading) {
     return (
@@ -79,6 +81,8 @@ export default function ProductPage() {
             zIndex: 1000,
             display: 'flex',
             alignItems: 'stretch',
+            flexDirection: isMobile ? 'column' : 'row',
+            overflowY: 'auto',
           }}
         >
           {/* Image panel */}
@@ -89,7 +93,7 @@ export default function ProductPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '48px',
+              padding: isMobile ? '72px 18px 20px' : '48px',
               cursor: 'zoom-out',
             }}
           >
@@ -109,14 +113,15 @@ export default function ProductPage() {
           {/* Description panel */}
           <div
             style={{
-              width: '340px',
+              width: isMobile ? '100%' : '340px',
               flexShrink: 0,
-              borderLeft: '1px solid rgba(255,255,255,0.07)',
+              borderLeft: isMobile ? 'none' : '1px solid rgba(255,255,255,0.07)',
+              borderTop: isMobile ? '1px solid rgba(255,255,255,0.07)' : 'none',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
-              padding: '56px 40px',
-              gap: '28px',
+              padding: isMobile ? '24px 18px 28px' : '56px 40px',
+              gap: isMobile ? '20px' : '28px',
               background: 'rgba(255,255,255,0.02)',
             }}
           >
@@ -202,7 +207,7 @@ export default function ProductPage() {
                 textTransform: 'uppercase',
                 cursor: 'pointer',
                 transition: 'opacity 220ms',
-                alignSelf: 'flex-start',
+                alignSelf: isMobile ? 'stretch' : 'flex-start',
               }}
               onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
               onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
@@ -216,8 +221,8 @@ export default function ProductPage() {
             onClick={() => setLightbox(false)}
             style={{
               position: 'fixed',
-              top: '24px',
-              right: '28px',
+              top: isMobile ? '16px' : '24px',
+              right: isMobile ? '16px' : '28px',
               background: 'rgba(255,255,255,0.08)',
               border: '1px solid rgba(255,255,255,0.12)',
               borderRadius: '999px',
@@ -246,13 +251,13 @@ export default function ProductPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '100px 24px 60px',
+          padding: isMobile ? '88px 16px 36px' : '100px 24px 60px',
         }}
       >
         <div
           style={{
             display: 'flex',
-            gap: '64px',
+            gap: isMobile ? '28px' : '64px',
             alignItems: 'flex-start',
             maxWidth: '1100px',
             width: '100%',
@@ -287,13 +292,13 @@ export default function ProductPage() {
               <div
                 style={{
                   position: 'absolute',
-                  bottom: '14px',
-                  right: '14px',
+                  bottom: isMobile ? '10px' : '14px',
+                  right: isMobile ? '10px' : '14px',
                   background: 'rgba(0,0,0,0.5)',
                   backdropFilter: 'blur(6px)',
                   borderRadius: '999px',
-                  padding: '6px 12px',
-                  fontSize: '10px',
+                  padding: isMobile ? '5px 10px' : '6px 12px',
+                  fontSize: isMobile ? '9px' : '10px',
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
                   color: 'rgba(255,255,255,0.7)',
@@ -309,7 +314,7 @@ export default function ProductPage() {
           <div
             style={{
               flex: '1 1 280px',
-              paddingTop: '12px',
+              paddingTop: isMobile ? '0' : '12px',
               display: 'flex',
               flexDirection: 'column',
               gap: '20px',
@@ -362,7 +367,7 @@ export default function ProductPage() {
                 color: 'rgba(255,255,255,0.72)',
                 lineHeight: 1.7,
                 margin: 0,
-                maxWidth: '360px',
+                maxWidth: isMobile ? '100%' : '360px',
               }}
             >
               {product.description}
@@ -373,6 +378,7 @@ export default function ProductPage() {
                 onClick={handleAdd}
                 style={{
                   padding: '14px 36px',
+                  width: isMobile ? '100%' : 'auto',
                   borderRadius: '999px',
                   border: 'none',
                   background: added ? 'rgba(255,255,255,0.95)' : '#ffffff',

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ART STUDIO – Product Showcase</title>
+  <style>
+    /* ─── RESET ─────────────────────────────────────────── */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ─── BASE STYLES (MOBILE FIRST) ─────────────────────── */
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 16px;
+      background: #ffffff;
+      color: #0a0a0a;
+      line-height: 1.5;
+    }
+
+    /* ─── NAVIGATION ─────────────────────────────────────── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .nav-brand {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #0a0a0a;
+    }
+
+    .nav-links {
+      display: none; /* hidden on mobile */
+      list-style: none;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(0, 0, 0, 0.45);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: #000; }
+
+    .nav-cart {
+      padding: 7px 16px;
+      background: #0a0a0a;
+      border: 1px solid #0a0a0a;
+      border-radius: 999px;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    /* ─── HERO BANNER ─────────────────────────────────────── */
+    .hero {
+      padding: 48px 20px 36px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .hero p {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: rgba(0, 0, 0, 0.45);
+      letter-spacing: 0.06em;
+    }
+
+    .hero-line {
+      display: inline-block;
+      margin-top: 20px;
+      width: 40px;
+      height: 2px;
+      background: #0a0a0a;
+      border-radius: 2px;
+    }
+
+    /* ─── FILTER TABS ─────────────────────────────────────── */
+    .filters {
+      display: flex;
+      gap: 8px;
+      padding: 0 20px 28px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .filters::-webkit-scrollbar { display: none; }
+
+    .filter-btn {
+      padding: 7px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      background: transparent;
+      color: rgba(0, 0, 0, 0.5);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active,
+    .filter-btn:hover {
+      background: #0a0a0a;
+      border-color: #0a0a0a;
+      color: #ffffff;
+    }
+
+    /* ─── PRODUCT GRID (MOBILE: 1 COLUMN) ────────────────── */
+    .products {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 0 20px 60px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* ─── PRODUCT CARD ────────────────────────────────────── */
+    .card {
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Responsive image */
+    .card-img {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      display: block;
+      background: #f0f0f0;
+    }
+
+    .card-body {
+      padding: 18px 20px 20px;
+    }
+
+    .card-category {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(0, 0, 0, 0.35);
+      margin-bottom: 6px;
+    }
+
+    .card-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #0a0a0a;
+    }
+
+    .card-desc {
+      margin-top: 8px;
+      font-size: 0.83rem;
+      color: rgba(0, 0, 0, 0.5);
+      line-height: 1.6;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 18px;
+    }
+
+    .card-price {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0a0a0a;
+    }
+
+    .card-price span {
+      font-size: 0.75rem;
+      color: rgba(0, 0, 0, 0.35);
+      margin-right: 2px;
+    }
+
+    .card-btn {
+      padding: 8px 18px;
+      background: #0a0a0a;
+      color: #ffffff;
+      border: none;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .card-btn:hover { opacity: 0.85; }
+
+    /* ─── COLOUR SWATCH ───────────────────────────────────── */
+    .swatch {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 24px 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
+      font-size: 0.75rem;
+      color: rgba(0, 0, 0, 0.3);
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── BREAKPOINT 1: TABLET (min-width: 640px) ─────────── */
+    @media (min-width: 640px) {
+      body { font-size: 17px; }
+
+      .hero h1 { font-size: 2.2rem; }
+
+      /* 2-column grid */
+      .products {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      .nav-links {
+        display: flex; /* show nav links on tablet+ */
+      }
+    }
+
+    /* ─── BREAKPOINT 2: DESKTOP (min-width: 1024px) ───────── */
+    @media (min-width: 1024px) {
+      body { font-size: 18px; }
+
+      nav { padding: 20px 48px; }
+
+      .hero {
+        padding: 72px 48px 48px;
+        text-align: left;
+        max-width: 1300px;
+        margin: 0 auto;
+      }
+
+      .hero h1 { font-size: 2.8rem; }
+
+      .filters { padding: 0 48px 36px; }
+
+      /* 4-column grid — one per product */
+      .products {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        padding: 0 48px 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav>
+    <span class="nav-brand">Art Studio</span>
+    <ul class="nav-links">
+      <li><a href="#">Paintings</a></li>
+      <li><a href="#">Prints</a></li>
+      <li><a href="#">Photography</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+    <button class="nav-cart">Cart (0)</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Our Collection</h1>
+    <p>Handpicked artworks from emerging and established artists</p>
+    <span class="hero-line"></span>
+  </section>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <button class="filter-btn active">All</button>
+    <button class="filter-btn">Painting</button>
+    <button class="filter-btn">Print</button>
+    <button class="filter-btn">Photography</button>
+    <button class="filter-btn">Digital</button>
+  </div>
+
+  <!-- PRODUCT GRID -->
+  <section class="products">
+
+    <!-- Product 1 -->
+    <article class="card">
+      <img
+        class="card-img"
+        src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&q=80"
+        alt="Golden Horizon painting"
+      />
+      <div class="card-body">
+        <p class="card-category">
+          <span class="swatch" style="background:#0a0a0a;"></span>Painting
+        </p>
+        <h2 class="card-name">Golden Horizon</h2>
+        <p class="card-desc">
+          A warm, luminous landscape capturing the last light of a Kenyan sunset over the Rift Valley escarpment.
+        </p>
+        <div class="card-footer">
+          <p class="card-price"><span>KSH</span> 48,000</p>
+          <button class="card-btn">Add to Cart</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Product 2 -->
+    <article class="card">
+      <img
+        class="card-img"
+        src="https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=600&q=80"
+        alt="Rhythm abstract art"
+      />
+      <div class="card-body">
+        <p class="card-category">
+          <span class="swatch" style="background:#6c63ff;"></span>Abstract
+        </p>
+        <h2 class="card-name">Rhythm</h2>
+        <p class="card-desc">
+          Bold geometric forms and vibrant colour blocks that echo the energy and movement of East African music.
+        </p>
+        <div class="card-footer">
+          <p class="card-price"><span>KSH</span> 62,000</p>
+          <button class="card-btn">Add to Cart</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Product 3 -->
+    <article class="card">
+      <img
+        class="card-img"
+        src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?w=600&q=80"
+        alt="Serene Waters photography"
+      />
+      <div class="card-body">
+        <p class="card-category">
+          <span class="swatch" style="background:#74c0fc;"></span>Photography
+        </p>
+        <h2 class="card-name">Serene Waters</h2>
+        <p class="card-desc">
+          Fine art print of Lake Naivasha at dawn — still water reflecting pink skies and floating lily pads.
+        </p>
+        <div class="card-footer">
+          <p class="card-price"><span>KSH</span> 35,000</p>
+          <button class="card-btn">Add to Cart</button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Product 4 -->
+    <article class="card">
+      <img
+        class="card-img"
+        src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&q=80"
+        alt="Digital Bloom artwork"
+      />
+      <div class="card-body">
+        <p class="card-category">
+          <span class="swatch" style="background:#f06595;"></span>Digital
+        </p>
+        <h2 class="card-name">Digital Bloom</h2>
+        <p class="card-desc">
+          A high-resolution digital artwork blending organic floral motifs with glitch-art textures and neon gradients.
+        </p>
+        <div class="card-footer">
+          <p class="card-price"><span>KSH</span> 22,000</p>
+          <button class="card-btn">Add to Cart</button>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <footer>
+    <p>BIT3208 Advanced Web Design &nbsp;·&nbsp; Week 8 Task 2 &nbsp;·&nbsp; Jane Wangui Gichuhi &nbsp;·&nbsp; BSCCS/2024/32659</p>
+  </footer>
+
+</body>
+</html>

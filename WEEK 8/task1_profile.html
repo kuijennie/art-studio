@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jane Wangui – Profile</title>
+  <style>
+    /* ─── RESET ─────────────────────────────────────────── */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ─── BASE (MOBILE FIRST) ────────────────────────────── */
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 16px;
+      background: #0a0a0a;
+      color: #ffffff;
+      line-height: 1.6;
+      padding: 16px;
+    }
+
+    /* ─── HEADER ─────────────────────────────────────────── */
+    header {
+      text-align: center;
+      padding: 32px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 32px;
+    }
+
+    .avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: #c6f135;
+      color: #0a0a0a;
+      font-size: 36px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      border: 3px solid rgba(198, 241, 53, 0.3);
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    header p {
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 0.85rem;
+      margin-top: 6px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 4px 14px;
+      background: rgba(198, 241, 53, 0.12);
+      border: 1px solid rgba(198, 241, 53, 0.3);
+      border-radius: 999px;
+      color: #c6f135;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ─── MAIN LAYOUT (MOBILE: SINGLE COLUMN) ────────────── */
+    .layout {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ─── CARDS ──────────────────────────────────────────── */
+    .card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .card h2 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.35);
+      margin-bottom: 16px;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.8;
+    }
+
+    /* ─── SKILLS LIST ─────────────────────────────────────── */
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .skill-tag {
+      padding: 5px 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* ─── CONTACT LIST ────────────────────────────────────── */
+    .contact-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .contact-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .contact-list .icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: rgba(198, 241, 53, 0.1);
+      border: 1px solid rgba(198, 241, 53, 0.2);
+      color: #c6f135;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .contact-list a {
+      color: #c6f135;
+      text-decoration: none;
+    }
+
+    /* ─── EDUCATION ───────────────────────────────────────── */
+    .edu-item {
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .edu-item:last-child { border-bottom: none; }
+
+    .edu-item h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .edu-item span {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.2);
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── TABLET (768px+) ─────────────────────────────────── */
+    @media (min-width: 768px) {
+      body {
+        font-size: 17px;
+        padding: 24px;
+      }
+
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .avatar {
+        width: 130px;
+        height: 130px;
+        font-size: 42px;
+      }
+
+      /* Two-column layout: sidebar + main */
+      .layout {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 20px;
+      }
+
+      .sidebar {
+        flex: 0 0 260px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .main-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+    }
+
+    /* ─── DESKTOP (1024px+) ───────────────────────────────── */
+    @media (min-width: 1024px) {
+      body {
+        font-size: 18px;
+        padding: 40px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        text-align: left;
+        padding: 40px;
+        max-width: 1100px;
+        margin: 0 auto 40px;
+      }
+
+      header .avatar {
+        margin: 0;
+        width: 150px;
+        height: 150px;
+        font-size: 48px;
+        flex-shrink: 0;
+      }
+
+      .sidebar {
+        flex: 0 0 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER / HERO -->
+  <header>
+    <div class="avatar">JW</div>
+    <div>
+      <h1>Jane Wangui Gichuhi</h1>
+      <p>BSCCS/2024/32659 &nbsp;·&nbsp; Year 4, Semester 2</p>
+      <span class="badge">Computer Science Student</span>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <!-- Contact -->
+      <div class="card">
+        <h2>Contact Information</h2>
+        <ul class="contact-list">
+          <li>
+            <span class="icon">✉</span>
+            <a href="mailto:wanguijane339@gmail.com">wanguijane339@gmail.com</a>
+          </li>
+          <li>
+            <span class="icon">🏫</span>
+            Mount Kenya University
+          </li>
+          <li>
+            <span class="icon">📍</span>
+            Nairobi, Kenya
+          </li>
+          <li>
+            <span class="icon">🌐</span>
+            <a href="https://github.com/kuijennie" target="_blank">github.com/kuijennie</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Skills -->
+      <div class="card">
+        <h2>Skills</h2>
+        <div class="skills">
+          <span class="skill-tag">HTML5</span>
+          <span class="skill-tag">CSS3</span>
+          <span class="skill-tag">JavaScript</span>
+          <span class="skill-tag">React</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">MongoDB</span>
+          <span class="skill-tag">Express.js</span>
+          <span class="skill-tag">TypeScript</span>
+          <span class="skill-tag">PHP</span>
+          <span class="skill-tag">MySQL</span>
+          <span class="skill-tag">Git / GitHub</span>
+          <span class="skill-tag">Responsive Design</span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- MAIN COLUMN -->
+    <main class="main-col">
+
+      <!-- About -->
+      <div class="card">
+        <h2>About Me</h2>
+        <p>
+          I am a fourth-year Bachelor of Science in Computer Science student at Mount Kenya University,
+          passionate about full-stack web development. My current semester project is <strong>ART STUDIO</strong>,
+          a MERN-stack e-commerce platform for an art gallery featuring dynamic colour theming, secure
+          authentication, and Stripe payment integration.
+        </p>
+        <p style="margin-top: 12px;">
+          I enjoy building modern, responsive web applications that deliver great user experiences across
+          all devices. My interests span frontend design, backend APIs, database management, and application security.
+        </p>
+      </div>
+
+      <!-- Education -->
+      <div class="card">
+        <h2>Education</h2>
+        <div class="edu-item">
+          <h3>BSc Computer Science</h3>
+          <span>Mount Kenya University &nbsp;·&nbsp; 2021 – Present</span>
+        </div>
+        <div class="edu-item">
+          <h3>BIT3208 – Advanced Web Design</h3>
+          <span>Year 4, Semester 2 &nbsp;·&nbsp; Lecturer: Michael Nyoro</span>
+        </div>
+        <div class="edu-item">
+          <h3>Kenya Certificate of Secondary Education</h3>
+          <span>2017 – 2020</span>
+        </div>
+      </div>
+
+      <!-- Current Project -->
+      <div class="card">
+        <h2>Current Project</h2>
+        <p>
+          <strong style="color: #c6f135;">ART STUDIO</strong> — A full-stack MERN e-commerce platform
+          for an art gallery. Features include product browsing with dynamic colour themes, JWT-based
+          user authentication, role-based access control, Stripe payment processing, and a fully
+          responsive mobile-first interface.
+        </p>
+        <div class="skills" style="margin-top: 14px;">
+          <span class="skill-tag">MongoDB</span>
+          <span class="skill-tag">Express.js</span>
+          <span class="skill-tag">React 19</span>
+          <span class="skill-tag">Node.js</span>
+          <span class="skill-tag">JWT Auth</span>
+          <span class="skill-tag">Stripe</span>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <footer>
+    <p>BIT3208 Advanced Web Design &nbsp;·&nbsp; Week 8 Task 1 &nbsp;·&nbsp; Jane Wangui Gichuhi &nbsp;·&nbsp; BSCCS/2024/32659</p>
+  </footer>
+
+</body>
+</html>

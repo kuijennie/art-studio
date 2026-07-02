@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jane Wangui – Profile</title>
+  <style>
+    /* ── RESET ─────────────────────────────────────────────── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── BASE / MOBILE FIRST ────────────────────────────────── */
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      background: #ffffff;
+      color: #000000;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ─────────────────────────────────────────────────── */
+    nav {
+      border-bottom: 2px solid #000;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 24px;
+    }
+
+    .nav-links a {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #000;
+      text-decoration: none;
+    }
+
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── HEADER (MOBILE: stacked + centered) ─────────────────── */
+    .profile-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 40px 24px;
+      border-bottom: 2px solid #000;
+      gap: 24px;
+    }
+
+    .profile-img {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      border: 2px solid #000;
+      object-fit: cover;
+      max-width: 100%;
+    }
+
+    .profile-info h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .profile-info p {
+      margin-top: 6px;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #444;
+    }
+
+    /* ── PANELS GRID (MOBILE: 1 column) ─────────────────────── */
+    .panels {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .panel {
+      border-bottom: 2px solid #000;
+      padding: 28px 24px;
+    }
+
+    .panel:last-child {
+      border-bottom: none;
+    }
+
+    .panel h2 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #000;
+    }
+
+    .panel p {
+      font-size: 0.92rem;
+      color: #333;
+      line-height: 1.8;
+    }
+
+    .panel ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .panel ul li {
+      font-size: 0.92rem;
+      color: #333;
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .panel ul li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: #000;
+      font-weight: 700;
+    }
+
+    .contact-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .contact-row strong {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      min-width: 70px;
+    }
+
+    .contact-row span {
+      font-size: 0.88rem;
+      color: #333;
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    footer {
+      border-top: 2px solid #000;
+      padding: 18px 24px;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      color: #666;
+      text-transform: uppercase;
+    }
+
+    /* ── BREAKPOINT 1: TABLET (≥768px) ──────────────────────── */
+    @media (min-width: 768px) {
+      /* Header becomes horizontal */
+      .profile-header {
+        flex-direction: row;
+        text-align: left;
+        padding: 48px 40px;
+        gap: 36px;
+      }
+
+      .profile-img {
+        width: 150px;
+        height: 150px;
+        flex-shrink: 0;
+      }
+
+      /* 2 panels per row */
+      .panels {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .panel {
+        flex: 0 0 50%;
+        border-right: 2px solid #000;
+        border-bottom: 2px solid #000;
+      }
+
+      .panel:nth-child(2n) {
+        border-right: none;
+      }
+
+      .panel:nth-last-child(-n+2) {
+        border-bottom: none;
+      }
+    }
+
+    /* ── BREAKPOINT 2: DESKTOP (≥1024px) ────────────────────── */
+    @media (min-width: 1024px) {
+      body { font-size: 17px; }
+
+      .profile-header {
+        padding: 56px 56px;
+        gap: 48px;
+      }
+
+      .profile-img {
+        width: 180px;
+        height: 180px;
+      }
+
+      .profile-info h1 {
+        font-size: 2.2rem;
+      }
+
+      .profile-info p {
+        font-size: 0.9rem;
+      }
+
+      /* 3 panels per row */
+      .panel {
+        flex: 0 0 33.333%;
+        border-right: 2px solid #000;
+        border-bottom: none;
+      }
+
+      .panel:nth-child(3n) {
+        border-right: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav>
+    <span class="nav-brand">Jane Wangui</span>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="profile-header">
+    <img
+      class="profile-img"
+      src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop"
+      alt="Jane Wangui profile picture"
+    />
+    <div class="profile-info">
+      <h1>Jane Wangui</h1>
+      <p>BIT Student &nbsp;·&nbsp; Web Designer &nbsp;·&nbsp; Marketer</p>
+    </div>
+  </header>
+
+  <!-- PANELS -->
+  <div class="panels">
+
+    <!-- About -->
+    <section class="panel" id="about">
+      <h2>About</h2>
+      <p>
+        I am a fourth-year Bachelor of Information Technology student at Mount Kenya University,
+        specialising in web design and development. My semester project — ART STUDIO — is a
+        full-stack MERN e-commerce platform for an art gallery. I am passionate about building
+        clean, user-centred digital experiences that work seamlessly across all devices.
+      </p>
+    </section>
+
+    <!-- Skills -->
+    <section class="panel" id="skills">
+      <h2>Skills</h2>
+      <ul>
+        <li>HTML5 &amp; CSS3</li>
+        <li>Responsive Web Design</li>
+        <li>JavaScript &amp; TypeScript</li>
+        <li>React &amp; Node.js</li>
+        <li>MongoDB &amp; Express.js</li>
+        <li>Figma &amp; UI/UX Design</li>
+        <li>Git &amp; GitHub</li>
+        <li>Digital Marketing</li>
+      </ul>
+    </section>
+
+    <!-- Contact -->
+    <section class="panel" id="contact">
+      <h2>Contact</h2>
+      <div class="contact-row">
+        <strong>Email</strong>
+        <span>wanguijane339@gmail.com</span>
+      </div>
+      <div class="contact-row">
+        <strong>Phone</strong>
+        <span>+254 700 000 000</span>
+      </div>
+      <div class="contact-row">
+        <strong>Location</strong>
+        <span>Nairobi, Kenya</span>
+      </div>
+      <div class="contact-row">
+        <strong>GitHub</strong>
+        <span>github.com/kuijennie</span>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    BIT3208 Advanced Web Design &nbsp;·&nbsp; Week 8 Task 1 &nbsp;·&nbsp; Jane Wangui Gichuhi &nbsp;·&nbsp; BSCCS/2024/32659
+  </footer>
+
+</body>
+</html>

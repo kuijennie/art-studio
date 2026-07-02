@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Showcase</title>
+  <style>
+    /* ── RESET ─────────────────────────────────────────────── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── BASE / MOBILE FIRST ────────────────────────────────── */
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      background: #ffffff;
+      color: #000000;
+      line-height: 1.5;
+    }
+
+    /* ── PAGE HEADER ─────────────────────────────────────────── */
+    .page-header {
+      text-align: center;
+      padding: 48px 24px 36px;
+      border-bottom: 2px solid #000;
+    }
+
+    .page-header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .page-header p {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #555;
+    }
+
+    /* ── GRID (MOBILE: 1 column) ─────────────────────────────── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding: 32px 24px 56px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── PRODUCT CARD ─────────────────────────────────────────── */
+    .card {
+      border: 2px solid #000;
+      border-radius: 0;
+      overflow: hidden;
+    }
+
+    /* Responsive image */
+    .card-img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+      border-bottom: 2px solid #000;
+    }
+
+    .card-body {
+      padding: 16px 18px 0;
+    }
+
+    .card-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .card-desc {
+      margin-top: 6px;
+      font-size: 0.82rem;
+      color: #444;
+      line-height: 1.6;
+    }
+
+    .card-price {
+      margin-top: 14px;
+      padding: 12px 18px;
+      border-top: 2px solid #000;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────────── */
+    footer {
+      border-top: 2px solid #000;
+      padding: 18px 24px;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      color: #666;
+      text-transform: uppercase;
+    }
+
+    /* ── BREAKPOINT 1: TABLET (≥768px) ──────────────────────── */
+    @media (min-width: 768px) {
+      .page-header h1 { font-size: 2.2rem; }
+
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+        padding: 40px 32px 64px;
+      }
+    }
+
+    /* ── BREAKPOINT 2: DESKTOP (≥1024px) ────────────────────── */
+    @media (min-width: 1024px) {
+      .page-header {
+        padding: 64px 48px 48px;
+      }
+
+      .page-header h1 { font-size: 2.6rem; }
+
+      .grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 48px 48px 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>Product Showcase</h1>
+    <p>Responsive CSS Grid &nbsp;·&nbsp; Mobile-First &nbsp;·&nbsp; Black &amp; White</p>
+  </div>
+
+  <!-- PRODUCT GRID -->
+  <section class="grid">
+
+    <!-- Product 1 -->
+    <article class="card">
+      <img
+        class="card-img"
+        src="https://images.unsplash.com/photo-1586495777744-4e6232bf5cc3?w=600&h=600&fit=crop"
+        alt="Matte Lipstick"
+      />
+      <div class="card-body">
+        <h2 class="card-name">Matte Lipstick</h2>
+        <p class="card-desc">
+          Long-lasting matte formula in rich, pigmented shades. Comfortable wear with a velvety finish.
+        </p>
+      </div>
+      <p class="card-price">KSh 1,200</p>
+    </article>
+
+    <!-- Product 2 -->
+    <article class="card">
+      <img
+        class="card-img"
+        src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&h=600&fit=crop"
+        alt="Velvet Foundation"
+      />
+      <div class="card-body">
+        <h2 class="card-name">Velvet Foundation</h2>
+        <p class="card-desc">
+          Full-coverage foundation with a velvet-matte finish. Buildable formula for flawless skin.
+        </p>
+      </div>
+      <p class="card-price">KSh 2,800</p>
+    </article>
+
+    <!-- Product 3 -->
+    <article class="card">
+      <img
+        class="card-img"
+        src="https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=600&h=600&fit=crop"
+        alt="Glow Highlighter"
+      />
+      <div class="card-body">
+        <h2 class="card-name">Glow Highlighter</h2>
+        <p class="card-desc">
+          Finely milled powder highlighter for a luminous, radiant glow on cheekbones and brow bones.
+        </p>
+      </div>
+      <p class="card-price">KSh 1,650</p>
+    </article>
+
+    <!-- Product 4 -->
+    <article class="card">
+      <img
+        class="card-img"
+        src="https://images.unsplash.com/photo-1631214524020-3c69a8a01bf0?w=600&h=600&fit=crop"
+        alt="Brow Definer"
+      />
+      <div class="card-body">
+        <h2 class="card-name">Brow Definer</h2>
+        <p class="card-desc">
+          Precision micro-tip pencil for defined, natural-looking brows. Smudge-proof and waterproof.
+        </p>
+      </div>
+      <p class="card-price">KSh 950</p>
+    </article>
+
+  </section>
+
+  <footer>
+    BIT3208 Advanced Web Design &nbsp;·&nbsp; Week 8 Task 2 &nbsp;·&nbsp; Jane Wangui Gichuhi &nbsp;·&nbsp; BSCCS/2024/32659
+  </footer>
+
+</body>
+</html>
